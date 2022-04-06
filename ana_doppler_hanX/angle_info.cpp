@@ -1,0 +1,248 @@
+#include "angle_info.h"
+#include <iostream>
+
+angle_info::angle_info()
+{
+  for(int i=0;i<5;i++){
+    for(int j=0;j<16;j++){
+      GETHETADEG[i][j] = 0.;  
+    }
+  }
+
+  //mod0
+  GETHETADEG[0][0] = 153.85;
+  GETHETADEG[0][1] = 153.85;
+  GETHETADEG[0][2] = 153.85;
+  GETHETADEG[0][3] = 153.85;
+  GETHETADEG[0][4] = 128.30;
+  GETHETADEG[0][5] = 128.30;
+  GETHETADEG[0][6] = 128.30;
+  GETHETADEG[0][7] = 128.30;
+  
+  //mod1
+  GETHETADEG[1][0] = 51.70;
+  GETHETADEG[1][1] = 51.70;
+  GETHETADEG[1][2] = 51.70;
+  GETHETADEG[1][3] = 51.70;
+  GETHETADEG[1][4] = 26.15;
+  GETHETADEG[1][5] = 26.15;
+  GETHETADEG[1][6] = 26.15;
+  GETHETADEG[1][7] = 26.15;
+  
+  //mod2 3-1,3-2,3-3
+  GETHETADEG[2][0] = 90.0;
+  GETHETADEG[2][1] = 90.0;
+  GETHETADEG[2][2] = 90.0;
+  GETHETADEG[2][3] = 90.0;
+  GETHETADEG[2][4] = 90.0;
+  GETHETADEG[2][5] = 90.0;
+  GETHETADEG[2][6] = 90.0;
+  GETHETADEG[2][7] = 90.0;
+  GETHETADEG[2][8] = 90.0;
+  GETHETADEG[2][9] = 90.0;
+  GETHETADEG[2][10] = 90.0;
+  GETHETADEG[2][11] = 90.0;
+  
+  //mod3 3-4,3-5,3-6
+  GETHETADEG[3][0] = 90.0;
+  GETHETADEG[3][1] = 90.0;
+  GETHETADEG[3][2] = 90.0;
+  GETHETADEG[3][3] = 90.0;
+  GETHETADEG[3][8] = 90.0;
+  GETHETADEG[3][9] = 90.0;
+  GETHETADEG[3][10] = 90.0;
+  GETHETADEG[3][11] = 90.0;
+  
+  //mod4 3-7,3-8
+  GETHETADEG[4][0] = 90.0;
+  GETHETADEG[4][1] = 90.0;
+  GETHETADEG[4][2] = 90.0;
+  GETHETADEG[4][3] = 90.0;
+  GETHETADEG[4][4] = 90.0;
+  GETHETADEG[4][5] = 90.0;
+  GETHETADEG[4][6] = 90.0;
+  GETHETADEG[4][7] = 90.0;
+  GETHETADEG[4][8] = 90.0;
+  GETHETADEG[4][9] = 90.0;
+  GETHETADEG[4][10] = 90.0;
+  GETHETADEG[4][11] = 90.0;
+  
+  for(int i=0;i<5;i++){
+    for(int j=0;j<16;j++){
+      GEPHIDEG[i][j] = 0.;
+    }
+  }
+  
+  //mod0
+  GEPHIDEG[0][0] = 67.50;
+  GEPHIDEG[0][1] = 157.50;
+  GEPHIDEG[0][2] = 247.50;
+  GEPHIDEG[0][3] = 337.50;
+  GEPHIDEG[0][4] = 22.50;
+  GEPHIDEG[0][5] = 112.50;
+  GEPHIDEG[0][6] = 202.50;
+  GEPHIDEG[0][7] = 292.50;
+  
+  //mod1
+  GEPHIDEG[1][0] = 67.50;
+  GEPHIDEG[1][1] = 157.50;
+  GEPHIDEG[1][2] = 247.50;
+  GEPHIDEG[1][3] = 337.50;
+  GEPHIDEG[1][4] = 22.50;
+  GEPHIDEG[1][5] = 112.50;
+  GEPHIDEG[1][6] = 202.50;
+  GEPHIDEG[1][7] = 292.50;
+  
+  //mod2 clover 3-1,3-2,3-3
+  GEPHIDEG[2][0] = 22.50;
+  GEPHIDEG[2][1] = 22.50;
+  GEPHIDEG[2][2] = 22.50;
+  GEPHIDEG[2][3] = 22.50;
+  GEPHIDEG[2][4] = 67.50;
+  GEPHIDEG[2][5] = 67.50;
+  GEPHIDEG[2][6] = 67.50;
+  GEPHIDEG[2][7] = 67.50;
+  GEPHIDEG[2][8] = 112.50;
+  GEPHIDEG[2][9] = 112.50;
+  GEPHIDEG[2][10] = 112.50;
+  GEPHIDEG[2][11] = 112.50;
+  
+  //mod3 clover 3-5,3-6
+  GEPHIDEG[3][0] = 202.50;
+  GEPHIDEG[3][1] = 202.50;
+  GEPHIDEG[3][2] = 202.50;
+  GEPHIDEG[3][3] = 202.50;
+  GEPHIDEG[3][8] = 247.50;
+  GEPHIDEG[3][9] = 247.50;
+  GEPHIDEG[3][10] = 247.50;
+  GEPHIDEG[3][11] = 247.50;
+  
+  //mod4 clover 3-7,3-8
+  GEPHIDEG[4][0] = 292.50;
+  GEPHIDEG[4][1] = 292.50;
+  GEPHIDEG[4][2] = 292.50;
+  GEPHIDEG[4][3] = 292.50;
+  GEPHIDEG[4][8] = 337.50;
+  GEPHIDEG[4][9] = 337.50;
+  GEPHIDEG[4][10] = 337.50;
+  GEPHIDEG[4][11] = 337.50;
+  
+  BETA[0] = 0.0894;
+  BETA[1] = 0.0891;
+  BETA[2] = 0.0889;
+  BETA[3] = 0.0886;
+  BETA[4] = 0.0884;
+  BETA[5] = 0.0881;
+  BETA[6] = 0.0878;
+  BETA[7] = 0.0875;
+  BETA[8] = 0.0872;
+  BETA[9] = 0.0869;
+  BETA[10] = 0.0866;
+  BETA[11] = 0.0863;
+  BETA[12] = 0.0860;
+  BETA[13] = 0.0857;
+  BETA[14] = 0.0854;
+  BETA[15] = 0.0851;
+  BETA[16] = 0.0848;
+  BETA[17] = 0.0845;
+  BETA[18] = 0.0842;
+  BETA[19] = 0.0838;
+  BETA[20] = 0.0835;
+  BETA[21] = 0.0832;
+  BETA[22] = 0.0829;
+  BETA[23] = 0.0825;
+  
+  //
+  SITHETA[0] = 0.855;
+  SITHETA[1] = 0.896;
+  SITHETA[2] = 0.933;
+  SITHETA[3] = 0.967;
+  SITHETA[4] = 0.998;
+  SITHETA[5] = 1.026;
+  SITHETA[6] = 1.052;
+  SITHETA[7] = 1.075;
+  SITHETA[8] = 1.097;
+  SITHETA[9] = 1.117;
+  SITHETA[10] = 1.135;
+  SITHETA[11] = 1.153;
+  SITHETA[12] = 1.168;
+  SITHETA[13] = 1.183;
+  SITHETA[14] = 1.197;
+  SITHETA[15] = 1.210;
+  SITHETA[16] = 1.222;
+  SITHETA[17] = 1.233;
+  SITHETA[18] = 1.244;
+  SITHETA[19] = 1.254;
+  SITHETA[20] = 1.263;
+  SITHETA[21] = 1.272;
+  SITHETA[22] = 1.281;
+  SITHETA[23] = 1.289;
+  
+  SITHETADEG[0] = 48.991;
+  SITHETADEG[1] = 51.34;
+  SITHETADEG[2] = 53.471;
+  SITHETADEG[3] = 55.408;
+  SITHETADEG[4] = 57.172;
+  SITHETADEG[5] = 58.782;
+  SITHETADEG[6] = 60.255;
+  SITHETADEG[7] = 61.607;
+  SITHETADEG[8] = 62.85;
+  SITHETADEG[9] = 63.997;
+  SITHETADEG[10] = 65.056;
+  SITHETADEG[11] = 66.038;
+  SITHETADEG[12] = 66.949;
+  SITHETADEG[13] = 67.797;
+  SITHETADEG[14] = 68.587;
+  SITHETADEG[15] = 69.326;
+  SITHETADEG[16] = 70.017;
+  SITHETADEG[17] = 70.665;
+  SITHETADEG[18] = 71.274;
+  SITHETADEG[19] = 71.847;
+  SITHETADEG[20] = 72.387;
+  SITHETADEG[21] = 72.897;
+  SITHETADEG[22] = 73.379;
+  SITHETADEG[23] = 73.836;
+  
+  //
+  SIPHI[0] = 1.571;
+  SIPHI[1] = 1.767;
+  SIPHI[2] = 1.963;
+  SIPHI[3] = 2.160;
+  SIPHI[4] = 2.356;
+  SIPHI[5] = 2.552;
+  SIPHI[6] = 2.749;
+  SIPHI[7] = 2.945;
+  SIPHI[8] = 3.142;
+  SIPHI[9] = 2.338;
+  SIPHI[10] = 3.543;
+  SIPHI[11] = 3.731;
+  SIPHI[12] = 3.927;
+  SIPHI[13] = 4.123;
+  SIPHI[14] = 4.320;
+  SIPHI[15] = 4.516;
+  SIPHI[16] = 4.712;
+  SIPHI[17] = 4.909;
+  SIPHI[18] = 5.105;
+  SIPHI[19] = 5.301;
+  SIPHI[20] = 5.498;
+  SIPHI[21] = 5.694;
+  SIPHI[22] = 5.89;
+  SIPHI[23] = 6.087;
+  SIPHI[24] = 0.;
+  SIPHI[25] = 0.196;
+  SIPHI[26] = 0.393;
+  SIPHI[27] = 0.589;
+  SIPHI[28] = 0.785;
+  SIPHI[29] = 0.982;
+  SIPHI[30] = 1.178;
+  SIPHI[31] = 1.374;
+  
+  for(int i=0;i<32;i++){
+    SIPHIDEG[i] = 90 + 11.25*(double)i;
+  }
+}
+
+angle_info::~angle_info()
+{
+  
+}
