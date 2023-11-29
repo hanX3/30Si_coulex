@@ -31,8 +31,7 @@ Now, using tmp file.
 + `batch_sort.sh`: shell script
 #### doppler
 + `src/doppler.h/cpp & angle_info.h/cpp & analysis.h/cpp set.h main.cpp Makefile si_cal.txt ener_cal.dat`: doppler correction
-+ `analysis.sh & batch_anlysis.sh`: analysis shell script
-+ `clean.sh & batch_clean.sh`: analysis shell script
-After run analysis.sh, the rootfile will be saved in rootfile/rootfile_$index path. Go in that path and run `hadd all.root *.root` command in the terminal to add the whole rootfiles together.
++ `analysis.sh & batch_anlysis.sh`: analysis shell script. After run analysis.sh, the rootfile will be saved in rootfile/rootfile_$index path. Go in that path and run `hadd all.root *.root` command in the terminal to add the whole rootfiles together.
 + `try_phi.cpp`: draw doppler result with different phi rotation angles
++ `clean.sh & batch_clean.sh`: analysis shell script
 + `yield.cpp`: get yield
