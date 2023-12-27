@@ -26,6 +26,9 @@ Now, using tmp file.
 #### for_Si_front_and_back_correlation
 + `build.h & build.cpp & set.h & main.cpp & Makefile`: build Si ring and sector coincidence events
 + `batch_sort.sh`: shell script
++ `analysis/cali.cpp`: for correlation
++ `analysis/check.cpp`: for correlation results
++ `analysis/draw.cpp`: for correlation results
 #### build
 + `build.h & build.cpp & set.h & main.cpp & Makefile`: build Ge, Si ring and sector coincidence events
 + `batch_sort.sh`: shell script
