@@ -11,7 +11,7 @@ constexpr int SIMODNUM = SIMODNUMMAX-SIMODNUMMIN+1;
 constexpr double CUTGE = 200.;//keV
 constexpr double CUTSI = 100.;//channel
 
-constexpr double TIMEWINDOW = 50.;//ns
+constexpr double TIMEWINDOW = 200.;//ns
 
 
 #endif
