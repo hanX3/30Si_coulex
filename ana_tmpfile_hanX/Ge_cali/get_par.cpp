@@ -6,7 +6,7 @@ void get_par_single(int run, int mod, int ch)
 
   stringstream ss;
 
-  str_tmp = Form("./get_his_raw/run%05d_raw_spe.root", run);
+  str_tmp = Form("../raw2hist/rootfile/run%05d_raw_spe.root", run);
   TFile *f = new TFile(str_tmp.Data());
   if(f==NULL){
     cout << "open file " << str_tmp.Data() << " error!!!" << endl;
@@ -36,7 +36,7 @@ void get_par_all(int run)
 
   stringstream ss;
 
-  str_tmp = Form("./get_his_raw/run%05d_raw_spe.root", run);
+  str_tmp = Form("./raw2hist/rootfile/run%05d_raw_spe.root", run);
   TFile *f = new TFile(str_tmp.Data());
   if(f==NULL){
     cout << "open file " << str_tmp.Data() << " error!!!" << endl;
