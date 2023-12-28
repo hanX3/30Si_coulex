@@ -40,7 +40,7 @@ void get_his_raw(int runno)
 
   TDirectory *dir_mod[5];
 
-  sprintf(filename, "./run%05d_raw_spe.root", runno);
+  sprintf(filename, "./rootfile/run%05d_raw_spe.root", runno);
   TFile *fo = new TFile(filename, "recreate");
 
   for(int i=0;i<5;i++){
