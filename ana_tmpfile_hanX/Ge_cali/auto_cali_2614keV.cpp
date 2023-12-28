@@ -229,7 +229,49 @@ int auto_cali(TH1D *h, Float_t *par)
   pt3->Draw();
   c3->Update();
 
+  // 2614.5keV
+  TH1D *h_part = (TH1D*)h->Clone("h_part");
+  for(int k=0;k<h->GetNbinsX();k++){
+    if((par[0]+par[1]*h_part->GetBinCenter(k+1)+par[2]*h_part->GetBinCenter(k+1)*h_part->GetBinCenter(k+1))<2000.){
+      h_part->SetBinContent(k+1, 0);
+    }
+    if((par[0]+par[1]*h_part->GetBinCenter(k+1)+par[2]*h_part->GetBinCenter(k+1)*h_part->GetBinCenter(k+1))>3000.){
+      h_part->SetBinContent(k+1, 0);
+    }
+  }
+  TCanvas *c5 = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("c5");
+  if(!c5) c5 = new TCanvas("c5", "c5", 0, 500, 480, 360);
+  c5->cd();
+  c5->SetLogy();
+  h_part->SetTitle(h->GetTitle());
+  h_part->Draw();
+  TSpectrum *s_temp = new TSpectrum(1);
+  s_temp->Search(h_part, sigma, "", 0.1);
+  TF1 *tf_temp = new TF1("tf_temp", "gaus");
+  h_part->Fit(tf_temp, "", "", (*s_temp->GetPositionX())*0.99, (*s_temp->GetPositionX())*1.01);
+  cout << tf_temp->GetParameter(1) << endl;
+  c5->Update();
+
+  TCanvas *c6 = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("c6");
+  if(!c6) c6 = new TCanvas("c6", "c6", 490, 500, 480, 360);
+  TGraph *gr_new = new TGraph();
+  for(int k=0;k<i+1;k++){
+    gr_new->SetPoint(k, cal_x[k], cal_y[k]);
+  }
+  gr_new->SetPoint(i+1, tf_temp->GetParameter(1), 2614.5);
+  c6->cd();
+  gr_new->SetTitle(h->GetTitle());
+  gr_new->Draw("AP*");
+  TF1 *tf_pol2 = new TF1("tf_pol2", "pol2");
+  gr_new->Fit(tf_pol2);
+  par[0] = tf_pol2->GetParameter(0);
+  par[1] = tf_pol2->GetParameter(1);
+  par[2] = tf_pol2->GetParameter(2);
+  par[3] = tf_pol2->GetChisquare();
+
   cout << par[0] << "  " << par[1] << "  " << par[2] << endl;
+  cout << par[0] + par[1]*tf_temp->GetParameter(1) + par[2]*tf_temp->GetParameter(1)*tf_temp->GetParameter(1) << endl;
+  c6->Update();
 
   if(!gROOT->IsBatch()){
     printf("\nDouble click in the bottom right corner of the pad to continue\n");
@@ -238,6 +280,9 @@ int auto_cali(TH1D *h, Float_t *par)
   }
   delete f1;
   delete f2;
+  //delete gr;
+  //delete h_part;
+  //delete gr_new;
 
   return 0;
 }
