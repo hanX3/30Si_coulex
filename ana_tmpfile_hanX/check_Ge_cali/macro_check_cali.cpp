@@ -1,53 +1,47 @@
+void macro_check_cali(int run)
 {
+  gROOT->SetBatch(1);
   gROOT->ProcessLine(".L check_cali.cpp");
-  gROOT->ProcessLine("mod0->cd()");
-  gROOT->ProcessLine("check_cali(0, 0)");
-  gROOT->ProcessLine("check_cali(0, 1)");
-  gROOT->ProcessLine("check_cali(0, 2)");
-  gROOT->ProcessLine("check_cali(0, 3)");
-  gROOT->ProcessLine("check_cali(0, 4)");
-  gROOT->ProcessLine("check_cali(0, 5)");
-  gROOT->ProcessLine("check_cali(0, 6)");
-  gROOT->ProcessLine("check_cali(0, 7)");
 
-  gROOT->ProcessLine("gFile->cd()");
-  gROOT->ProcessLine("mod1->cd()");
-  gROOT->ProcessLine("check_cali(1, 0)");
-  gROOT->ProcessLine("check_cali(1, 1)");
-  gROOT->ProcessLine("check_cali(1, 2)");
-  gROOT->ProcessLine("check_cali(1, 3)");
-  gROOT->ProcessLine("check_cali(1, 4)");
-  gROOT->ProcessLine("check_cali(1, 5)");
-  gROOT->ProcessLine("check_cali(1, 6)");
-  gROOT->ProcessLine("check_cali(1, 7)");
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 0)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 1)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 2)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 3)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 4)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 5)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 6)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 0, 7)",run).Data());
 
-  gROOT->ProcessLine("gFile->cd()");
-  gROOT->ProcessLine("mod2->cd()");
-  gROOT->ProcessLine("check_cali(2, 0)");
-  gROOT->ProcessLine("check_cali(2, 1)");
-  gROOT->ProcessLine("check_cali(2, 3)");
-  gROOT->ProcessLine("check_cali(2, 4)");
-  gROOT->ProcessLine("check_cali(2, 8)");
-  gROOT->ProcessLine("check_cali(2, 10)");
-  gROOT->ProcessLine("check_cali(2, 11)");
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 0)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 1)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 2)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 3)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 4)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 5)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 6)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 1, 7)",run).Data());
 
-  gROOT->ProcessLine("gFile->cd()");
-  gROOT->ProcessLine("mod3->cd()");
-  gROOT->ProcessLine("check_cali(3, 0)");
-  gROOT->ProcessLine("check_cali(3, 8)");
-  gROOT->ProcessLine("check_cali(3, 9)");
-  gROOT->ProcessLine("check_cali(3, 10)");
-  gROOT->ProcessLine("check_cali(3, 11)");
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 0)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 1)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 3)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 4)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 8)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 10)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 2, 11)",run).Data());
 
-  gROOT->ProcessLine("gFile->cd()");
-  gROOT->ProcessLine("mod4->cd()");
-  gROOT->ProcessLine("check_cali(4, 0)");
-  gROOT->ProcessLine("check_cali(4, 1)");
-  gROOT->ProcessLine("check_cali(4, 2)");
-  gROOT->ProcessLine("check_cali(4, 8)");
-  gROOT->ProcessLine("check_cali(4, 9)");
-  gROOT->ProcessLine("check_cali(4, 10)");
-  gROOT->ProcessLine("check_cali(4, 11)");
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 3, 0)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 3, 8)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 3, 9)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 3, 10)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 3, 11)",run).Data());
+
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 0)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 1)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 2)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 8)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 9)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 10)",run).Data());
+  gROOT->ProcessLine(TString::Format("check_cali(%d, 4, 11)",run).Data());
 
   gROOT->ProcessLine(".q");
 }
