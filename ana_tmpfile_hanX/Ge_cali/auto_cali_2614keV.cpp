@@ -32,9 +32,12 @@ Float_t Intensity_152Eu = 1.0;
 Float_t Intensity_133Ba = 1.0;
 Float_t Intensity_60Co = 0;
 
-//for calibration
-Float_t threshold = 0.1; //search peak value;
-Float_t sigma = 3.0; //search peak sigma
+//search peak value
+//threshold=0.1 for normal
+Float_t threshold = 0.05;
+//search peak sigma
+//sigma=3.0 for normal
+Float_t sigma = 3.0;
 Float_t CHI_LIMIT = 20.0;
 double debug = 1;
 
