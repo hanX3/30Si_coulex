@@ -1,1 +1,9 @@
 *.root
+*.dat
+*.txt
+*.offset
+*.so
+sort
+build
+analysis
+png/
