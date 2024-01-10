@@ -10,7 +10,8 @@ sort::sort(const std::string &filename_in, const std::string &filename_out)
   benchmark = new TBenchmark;
 
   //
-  ReadCaliPar();
+  ReadGeCaliPar();
+  ReadSiCaliPar();
   ReadTsOffsetPar();
 
   memset(have_data, 0, sizeof(have_data));
@@ -94,6 +95,7 @@ void sort::Process()
         ts = it->second.ts;
 
         data.erase(it);
+        if(energy<20.)  continue;
         file_out->cd();
         tr->Fill();
       }//while
@@ -117,7 +119,11 @@ void sort::Process()
           if(ts_[16*i+j] < time){
             map_value.mod = (ch_[16*i+j]/100)-1;
             map_value.ch = ch_[16*i+j]%100;
-            map_value.energy = CaliEnergy(energy_[16*i+j], i, j);
+            if(i<5){
+              map_value.energy = CaliGeEnergy(energy_[16*i+j], i, j);
+            }else{
+              map_value.energy = CaliSiEnergy(energy_[16*i+j], i, j);
+            }
             map_value.ts = ts_[16*i+j];
 
             key = ((((ts_[16*i+j])<<4)+map_value.mod)<<4)+map_value.ch;
@@ -139,6 +145,7 @@ void sort::Process()
       ts = it->second.ts;
 
       data.erase(it);
+      if(energy<20.)  continue;
       file_out->cd();
       tr->Fill();
     }
@@ -155,11 +162,21 @@ void sort::Process()
     std::cout << std::flush;
   }
 
+  file_out->cd();
+  tr->Write();
+
   benchmark->Show("sorting"); 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void sort::ReadCaliPar()
+void sort::SaveFile()
+{
+  file_out->cd();
+  file_out->Close();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void sort::ReadGeCaliPar()
 {
   std::cout << "start ReadCalPar" << std::endl;
 
@@ -174,16 +191,16 @@ void sort::ReadCaliPar()
     //std::cout << mod << "  " << ch << "  " << par0 << "  " << par1 << "  " << par2 << "  " << chi2 << std::endl;
     if(!cali_file.good()) break;
 
-    par_cali[mod][ch][0] = par0;
-    par_cali[mod][ch][1] = par1;
-    par_cali[mod][ch][2] = par2;
+    par_ge_cali[mod][ch][0] = par0;
+    par_ge_cali[mod][ch][1] = par1;
+    par_ge_cali[mod][ch][2] = par2;
   }
 
   cali_file.close();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void sort::PrintCaliPar()
+void sort::PrintGeCaliPar()
 {
   std::cout << "print cali par" << std::endl;
 
@@ -191,11 +208,53 @@ void sort::PrintCaliPar()
     for(int j=0;j<16;j++){
       std::cout << i << "  " << j << "  ";
       for(int k=0;k<3;k++){
-        std::cout << par_cali[i][j][k] << "  ";
+        std::cout << par_ge_cali[i][j][k] << "  ";
       }
       std::cout << std::endl;
     }
     std::cout << std::endl;
+  }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void sort::ReadSiCaliPar()
+{
+  std::cout << "start read Si cali data" << std::endl;
+
+  std::ifstream ifs;
+  ifs.open("si_cali.dat");
+  if(!ifs){
+    std::cout << "cannot open si_cali.dat." << std::endl;
+    return ;
+  }
+
+  int mod, ch;
+  double par0, par1;
+  int key = 0;
+
+  while(1){
+    ifs >> mod >> ch >> par0 >> par1;
+    if(!ifs.good()) break;
+
+    key = 100*mod+ch;
+    std::vector<double> value;
+    value.push_back(par0);
+    value.push_back(par1);
+
+    map_si_cali_data.insert(std::pair<int, std::vector<double>>(key, value));
+  }
+
+  ifs.close();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void sort::PrintSiCaliPar()
+{
+  std::cout << "start read Si cali data" << std::endl;
+
+  std::map<int, std::vector<double>>::iterator it = map_si_cali_data.begin();
+  for(it=map_si_cali_data.begin();it!=map_si_cali_data.end();it++){
+    std::cout << it->first << " => " << it->second[0] << " " << it->second[1] << '\n';
   }
 }
 
@@ -238,22 +297,25 @@ void sort::PrintTsOffsetPar()
     std::cout << std::endl;
   }
 }
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void sort::SaveFile()
-{
-  file_out->cd();
-  file_out->Close();
-}
-
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-double sort::CaliEnergy(int adc, int mod, int ch)
+double sort::CaliGeEnergy(int adc, int mod, int ch)
 {
-  double energy = par_cali[mod][ch][0] + adc*par_cali[mod][ch][1] + adc*adc*par_cali[mod][ch][2];
+  double energy = par_ge_cali[mod][ch][0] + adc*par_ge_cali[mod][ch][1] + adc*adc*par_ge_cali[mod][ch][2];
   energy += rndm->Uniform(-0.5, 0.5);
 
   return energy;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+double sort::CaliSiEnergy(int adc, int mod, int ch)
+{
+  int key = 100*mod+ch;
+
+  auto it = map_si_cali_data.find(key);
+  if(it==map_si_cali_data.end()) return 0;
+
+  double adcc = map_si_cali_data[key][0] + adc*map_si_cali_data[key][1];
+  return adcc;
+}
 

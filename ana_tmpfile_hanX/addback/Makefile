@@ -1,6 +1,6 @@
-out = sort
+out = addback
 
-sourcefile = main.cpp sort.h sort.cpp set.h
+sourcefile = main.cpp addback.h addback.cpp set.h
 
 ROOTCFLAGS  = $(shell root-config --cflags)
 ROOTLIBS    = $(shell root-config --libs) -lSpectrum

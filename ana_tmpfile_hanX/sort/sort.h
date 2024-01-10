@@ -31,20 +31,26 @@ public:
   ~sort();
 
 public:
-  void ReadCaliPar();;
-  void PrintCaliPar();
-  void ReadTsOffsetPar();;
+  void Process();
+
+  void PrintGeCaliPar();
+  void PrintSiCaliPar();
   void PrintTsOffsetPar();
 
-  void Process();
+private:
+  void ReadGeCaliPar();
+  void ReadSiCaliPar();
+  void ReadTsOffsetPar();
 
   void SaveFile();
 
 private:
-  double CaliEnergy(int adc, int mod, int ch);
+  double CaliGeEnergy(int adc, int mod, int ch);
+  double CaliSiEnergy(int adc, int mod, int ch);
 
 private:
-  double par_cali[GEMODNUM+SIMODNUM][16][3];
+  double par_ge_cali[GEMODNUM+SIMODNUM][16][3];
+  std::map<int, std::vector<double>> map_si_cali_data;
   double par_ts_offset[GEMODNUM+SIMODNUM][16];
 
   std::map<Long64_t, xia_data> data;
