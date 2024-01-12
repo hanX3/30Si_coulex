@@ -204,7 +204,7 @@ void sort::PrintGeCaliPar()
 {
   std::cout << "print cali par" << std::endl;
 
-  for(int i=0;i<(GEMODNUM+SIMODNUM);i++){
+  for(int i=0;i<(GEMODNUM);i++){
     for(int j=0;j<16;j++){
       std::cout << i << "  " << j << "  ";
       for(int k=0;k<3;k++){

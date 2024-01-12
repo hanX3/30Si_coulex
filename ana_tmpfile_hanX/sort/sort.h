@@ -49,7 +49,7 @@ private:
   double CaliSiEnergy(int adc, int mod, int ch);
 
 private:
-  double par_ge_cali[GEMODNUM+SIMODNUM][16][3];
+  double par_ge_cali[GEMODNUM][16][3];
   std::map<int, std::vector<double>> map_si_cali_data;
   double par_ts_offset[GEMODNUM+SIMODNUM][16];
 
