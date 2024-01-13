@@ -1,6 +1,7 @@
+// root -l ../raw2hist/rootfile/Si_longtime.root
 
 // longtime Si
-void draw()
+void draw_longtime_Si()
 {
   TH2D *hh[24+32];
 
