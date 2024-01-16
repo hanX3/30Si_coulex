@@ -1,6 +1,9 @@
-//modified sector to ring12--mod5ch11
-void check(int run_num, int ts_window)
+//
+// modified sector to ring12--mod5ch11
+void check(int run_num, int mod_ch, int ts_window)
 {
+  gROOT->SetBatch(1);
+
   TFile *file_in;
   TString str_file_in;
   str_file_in = TString::Format("../rootfile/run%05d_build_%dns.root", run_num, ts_window);
@@ -11,7 +14,7 @@ void check(int run_num, int ts_window)
   ifstream file_Si_cali;
   file_Si_cali.open(TString::Format("run%05d_si_cali.txt",run_num).Data());
   if(!file_Si_cali){
-    cout << "can not open run00804_si_cali.txt" << endl;
+    cout << "can not open si_cali.txt" << endl;
     return ;
   }
   int mod, ch;
@@ -47,7 +50,9 @@ void check(int run_num, int ts_window)
 
   std::map<int, vector<double>>::iterator itt = map_si_cali_data.begin();
   for(it=map_si_cali_data.begin();it!=map_si_cali_data.end();it++){
+    if(it->first != mod_ch) continue;
     if(it->first>610) continue;
+    cout << "analysis " << it->first << endl;
     for(itt=map_si_cali_data.begin();itt!=map_si_cali_data.end();itt++){
       if(itt->first<610) continue;
 
@@ -55,24 +60,25 @@ void check(int run_num, int ts_window)
       int ch1 = it->first%100;
       int mod2 = itt->first/100;
       int ch2 = itt->first%100;
+
+      str_cut = TString::Format("n_Si_ring==1&&n_Si_sector==1&&Si_ring_mod==%d&&Si_ring_ch==%d&&Si_sector_mod==%d&&Si_sector_ch==%d", mod1, ch1, mod2, ch2);
+      /*
       TH1D *h1 = new TH1D("h1", TString::Format("h1_mod%02dch%02d_mod%02dch%02d", mod1, ch1, mod2, ch2).Data(), 1000, -500, 500);
       str_draw = TString::Format("%lf+%lf*Si_ring_adc-%lf-%lf*Si_sector_adc>>h1", it->second[0], it->second[1], itt->second[0], itt->second[1]);
-      str_cut = TString::Format("n_Si_ring==1&&n_Si_sector==1&&Si_ring_mod==%d&&Si_ring_ch==%d&&Si_sector_mod==%d&&Si_sector_ch==%d", mod1, ch1, mod2, ch2);
-      tr_Si->Draw(str_draw.Data(), str_cut.Data(), "col");
+      tr_Si->Draw(str_draw.Data(), str_cut.Data(), "goff");
       c2->cd();
       h1->Draw();
-      //c2->SaveAs(TString::Format("h1_mod%02dch%02d_mod%02dch%02d.png", mod1, ch1, mod2, ch2).Data());
+      c2->SaveAs(TString::Format("./png/h1_mod%02dch%02d_mod%02dch%02d.png", mod1, ch1, mod2, ch2).Data());
       if(h1) delete h1;
+      */
 
-      /*
       TH2D *h2 = new TH2D("h2", TString::Format("h1_mod%02dch%02d_mod%02dch%02d", mod1, ch1, mod2, ch2).Data(), 1000, -500, 500, 2048, 0, 32768);
       str_draw = TString::Format("%lf+%lf*Si_sector_adc:(%lf+%lf*Si_ring_adc-%lf-%lf*Si_sector_adc)>>h2", itt->second[0], itt->second[1], it->second[0], it->second[1], itt->second[0], itt->second[1]);
-      tr_Si->Draw(str_draw.Data(), str_cut.Data(), "col");
+      tr_Si->Draw(str_draw.Data(), str_cut.Data(), "colz goff");
       c3->cd();
       h2->Draw("col");
-      c3->SaveAs(TString::Format("h2_mod%02dch%02d_mod%02dch%02d.png", mod1, ch1, mod2, ch2).Data());
+      c3->SaveAs(TString::Format("./png/h2_mod%02dch%02d_mod%02dch%02d.png", mod1, ch1, mod2, ch2).Data());
       if(h2) delete h2;
-      */
     }
   }
 }

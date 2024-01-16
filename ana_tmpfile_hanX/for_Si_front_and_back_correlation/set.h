@@ -8,10 +8,9 @@ constexpr int SIMODNUMMIN = 5;
 constexpr int SIMODNUMMAX = 8;
 constexpr int SIMODNUM = SIMODNUMMAX-SIMODNUMMIN+1;
 
-constexpr double CUTGE = 200.;//keV
-constexpr double CUTSI = 100.;//channel
+constexpr double CUTSI = 20.;//channel
 
-constexpr double TIMEWINDOW = 200.;//ns
+constexpr double TIMEWINDOW = 2000.;//ns
 
 
 #endif

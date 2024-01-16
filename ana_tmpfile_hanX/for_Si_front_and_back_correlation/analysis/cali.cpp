@@ -121,7 +121,7 @@ void cali_sector(int run_num, int ts_window)
     gr[i]->Fit(str_tf1_name.Data(), "ROB");
     tf1[i]->Draw();
     h2[i]->Draw("same colz");
-    //c2[i]->SaveAs(TString::Format("%s.png", str_cc_name.Data()).Data());
+    c2[i]->SaveAs(TString::Format("./png/%s.png", str_cc_name.Data()).Data());
 
     cout << mod_sector << " " << ch_sector << " " << tf1[i]->GetParameter(0) << " " << tf1[i]->GetParameter(1) << endl;
     file_out << mod_sector << " " << ch_sector << " " << tf1[i]->GetParameter(0) << " " << tf1[i]->GetParameter(1) << endl;

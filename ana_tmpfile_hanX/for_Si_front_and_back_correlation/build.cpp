@@ -43,86 +43,9 @@ void build::Process()
 {
   benchmark->Start("build");
 
-  //GetGeCaliSpeNoCoin();
-  //GetSiNoCaliSpeNoCoin();
   GetSiFrontBackCorrelationData();
   
   benchmark->Show("build");
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void build::GetGeCaliSpeNoCoin()
-{
-  std::cout << "start get cali spec no coincedence" << std::endl;
-
-  TH1D *h_cali_nocoin[GEMODNUM][16];
-  TString str;
-  for(int i=0;i<GEMODNUM;i++){
-    for(int j=0;j<16;j++){
-      str.Clear();    
-      str = str.Format("h_mod%02d_ch%02d", i, j);
-      h_cali_nocoin[i][j] = new TH1D(str.Data(), str.Data(), 8192, 0, 4096);
-    }
-  }
-
-  for(Long64_t i=0;i<tr->GetEntries();i++){
-    if(i%1000000==0) std::cout << i << "/" << tr->GetEntries() << std::endl;
-
-    tr->GetEntry(i);
-    if(!(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX)) continue;
-    if(energy<CUTGE)  continue;
-    h_cali_nocoin[mod-GEMODNUMMIN][ch]->Fill(energy);
-  }
-  
-  TDirectory *dir_mod[GEMODNUM];
-  std::stringstream ss;
-  for(int i=GEMODNUMMIN;i<=GEMODNUMMAX;i++){
-    file_out->cd();
-    ss.str("");
-    ss << "mod" << i;
-    dir_mod[i-GEMODNUMMIN] = file_out->mkdir(ss.str().c_str());
-    dir_mod[i-GEMODNUMMIN]->cd();
-    for(int j=0;j<16;j++){
-      h_cali_nocoin[i-GEMODNUMMIN][j]->Write();     
-    }
-  }
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void build::GetSiNoCaliSpeNoCoin()
-{
-  TH1D *h_nocali_nocoin[SIMODNUM][16];
-  std::cout << "start get no cali Si spec no coincedence" << std::endl;
-
-  TString str;
-  for(int i=SIMODNUMMIN;i<=SIMODNUMMAX;i++){
-    for(int j=0;j<16;j++){
-      str.Clear();    
-      str = str.Format("h_mod%02d_ch%02d", i, j);
-      h_nocali_nocoin[i-SIMODNUMMIN][j] = new TH1D(str.Data(), str.Data(), 16384, 0, 65536);
-    }
-  }
-
-  for(Long64_t i=0;i<tr->GetEntries();i++){
-    if(i%1000000==0) std::cout << i << "/" << tr->GetEntries() << std::endl;
-
-    tr->GetEntry(i);
-    if(!(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX)) continue;
-    h_nocali_nocoin[mod-SIMODNUMMIN][ch]->Fill(energy);   
-  }
-  
-  TDirectory *dir_mod[SIMODNUM];
-  std::stringstream ss;
-  for(int i=SIMODNUMMIN;i<=SIMODNUMMAX;i++){
-    file_out->cd();
-    ss.str("");
-    ss << "mod" << i;
-    dir_mod[i-SIMODNUMMIN] = file_out->mkdir(ss.str().c_str());
-    dir_mod[i-SIMODNUMMIN]->cd();
-    for(int j=0;j<16;j++){
-      h_nocali_nocoin[i-SIMODNUMMIN][j]->Write();     
-    }
-  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
