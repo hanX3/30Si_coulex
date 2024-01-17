@@ -1,5 +1,64 @@
 //
-void cali_check_sector_single(int run_num, int sector_num, int ts_window, double rob=0.75)
+//ring
+//ring01--mod05ch00
+//ring02--mod05ch01
+//ring03--mod05ch02
+//ring04--mod05ch03
+//ring05--mod05ch04
+//ring06--mod05ch05
+//ring07--mod05ch06
+//ring08--mod05ch07
+//ring09--mod05ch08
+//ring10--mod05ch09
+//ring11--mod05ch10
+//ring12--mod05ch11
+//ring13--mod05ch12
+//ring14--mod05ch13
+//ring15--mod05ch14
+//ring16--mod05ch15
+//ring17--mod06ch00
+//ring18--mod06ch01
+//ring19--mod06ch02
+//ring20--mod06ch03
+//ring21--mod06ch04
+//ring22--mod06ch05
+//ring23--mod06ch06
+//ring24--mod06ch07
+//
+//sector
+//sector01--mod07ch00
+//sector02--mod07ch01
+//sector03--mod07ch02
+//sector04--mod07ch03
+//sector05--mod07ch04
+//sector06--mod07ch05
+//sector07--mod07ch06
+//sector08--mod07ch07
+//sector09--mod07ch08
+//sector10--mod07ch09
+//sector11--mod07ch10
+//sector12--mod07ch11
+//sector13--mod07ch12
+//sector14--mod07ch13
+//sector15--mod07ch14
+//sector16--mod07ch15--empty
+//sector17--mod08ch00--empty
+//sector18--mod08ch01
+//sector19--mod08ch02
+//sector20--mod08ch03
+//sector21--mod08ch04
+//sector22--mod08ch05
+//sector23--mod08ch06
+//sector24--mod08ch07--mod06ch14
+//sector25--mod08ch08
+//sector26--mod08ch09
+//sector27--mod08ch10
+//sector28--mod08ch11
+//sector29--mod08ch12
+//sector30--mod08ch13
+//sector31--mod08ch14
+//sector32--mod08ch15--mod06ch15
+void cali_check_sector_single(int run_num, int ring_num, int sector_num, int ts_window, double rob=0.75)
 {
   //x1=200,x2=2000 for source data
   //hx1=0, hx2=4096 for source data
@@ -16,7 +75,7 @@ void cali_check_sector_single(int run_num, int sector_num, int ts_window, double
   //x1=2000,x2=30000 for inbeam data
   //hx1=0, hx2=4096 for source data
   //hy1=0, hy2=4096 for source data
-  double x1 = 12000;
+  double x1 = 2000;
   double x2 = 30000;
   double hx1 = 0;
   double hx2 = 32768;
@@ -40,43 +99,14 @@ void cali_check_sector_single(int run_num, int sector_num, int ts_window, double
 
   int n = 0;
 
-  //sector01--mod07ch00
-  //sector02--mod07ch01
-  //sector03--mod07ch02
-  //sector04--mod07ch03
-  //sector05--mod07ch04
-  //sector06--mod07ch05
-  //sector07--mod07ch06
-  //sector08--mod07ch07
-  //sector09--mod07ch08
-  //sector10--mod07ch09
-  //sector11--mod07ch10
-  //sector12--mod07ch11
-  //sector13--mod07ch12
-  //sector14--mod07ch13
-  //sector15--mod07ch14
-  //sector16--mod07ch15--empty
-  //sector17--mod08ch00--empty
-  //sector18--mod08ch01
-  //sector19--mod08ch02
-  //sector20--mod08ch03
-  //sector21--mod08ch04
-  //sector22--mod08ch05
-  //sector23--mod08ch06
-  //sector24--mod08ch07--mod06ch14
-  //sector25--mod08ch08
-  //sector26--mod08ch09
-  //sector27--mod08ch10
-  //sector28--mod08ch11
-  //sector29--mod08ch12
-  //sector30--mod08ch13
-  //sector31--mod08ch14
-  //sector32--mod08ch15--mod06ch15
 
   TString str_h2_name, str_h2_title;
   TString str_draw, str_cut;
   TString str_cc_name, str_cc_title;
   TString str_tf1_name;
+  int mod_ring = ring_num/16 + 5;
+  int ch_ring = ring_num - 16*(mod_ring-5);
+
   int mod_sector, ch_sector;
 
   for(int i=0;i<32;i++){
@@ -94,19 +124,17 @@ void cali_check_sector_single(int run_num, int sector_num, int ts_window, double
     }
     cout << "mod_sector " << mod_sector << "  ch_sector " << ch_sector << endl;
 
-    str_h2_name = TString::Format("h2_ring12_sector%02d", i+1);
-    str_h2_title = TString::Format("h2_ring12_sector%02d", i+1);
+    str_h2_name = TString::Format("h2_ring%02d_sector%02d", ring_num, i);
+    str_h2_title = TString::Format("h2_ring%02d_sector%02d", ring_num, i);
 
     h2[i] = new TH2D(str_h2_name.Data(), str_h2_title.Data(), 2048, hx1, hx2, 2048, hy1, hy2);
     str_draw = TString::Format("Si_ring_adc:Si_sector_adc>>%s", str_h2_name.Data());
-    //str_cut = TString::Format("n_Si_ring==1&&n_Si_sector==1&&Si_ring_mod==5&&Si_ring_ch==11&&Si_sector_mod==%d&&Si_sector_ch==%d", mod_sector, ch_sector);
-    str_cut = TString::Format("n_Si_ring==1&&Si_ring_mod==5&&Si_ring_ch==11&&Si_sector_mod==%d&&Si_sector_ch==%d", mod_sector, ch_sector);
+    str_cut = TString::Format("n_Si_ring==1&&n_Si_sector==1&&Si_ring_mod==%d&&Si_ring_ch==%d&&Si_sector_mod==%d&&Si_sector_ch==%d", mod_ring, ch_ring, mod_sector, ch_sector);
     cout << str_h2_name.Data() << endl;
     cout << str_h2_title.Data() << endl;
     cout << str_draw.Data() << endl;
     cout << str_cut.Data() << endl;
     cout << endl;
-
 
     c1[i] = new TCanvas(TString::Format("c1%02d",sector_num).Data(), TString::Format("c1%02d",sector_num).Data(), 0, 0, 480, 360);
     c1[i]->cd();
@@ -114,13 +142,13 @@ void cali_check_sector_single(int run_num, int sector_num, int ts_window, double
     cout << "n " << n << endl;
     gr[i] = new TGraph(n, tr_Si->GetV2(), tr_Si->GetV1());
 
-    str_cc_name = TString::Format("cc_ring12_sector%02d", i+1);
-    str_cc_title = TString::Format("cc_ring12_sector%02d", i+1);
+    str_cc_name = TString::Format("cc_ring%02d_sector%02d", ring_num, i);
+    str_cc_title = TString::Format("cc_ring%02d_sector%02d", ring_num, i);
     c2[i] = new TCanvas(str_cc_name.Data(), str_cc_title.Data(), 0, 0, 480, 360);
     c2[i]->cd();
     gr[i]->Draw("ap");
 
-    str_tf1_name = TString::Format("tf1_ring12_sector%02d", i+1);
+    str_tf1_name = TString::Format("tf1_ring%02d_sector%02d", ring_num, i);
     tf1[i] = new TF1(str_tf1_name.Data(), "pol1", x1, x2);
     tf1[i]->SetLineColor(kGray);
     gr[i]->Fit(str_tf1_name.Data(), TString::Format("ROB=%lf",rob).Data());

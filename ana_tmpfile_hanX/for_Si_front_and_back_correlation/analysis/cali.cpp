@@ -183,31 +183,6 @@ void cali_ring(int run_num, int ts_window)
   
   int n = 0;
 
-  //ring01--mod05ch00
-  //ring02--mod05ch01
-  //ring03--mod05ch02
-  //ring04--mod05ch03
-  //ring05--mod05ch04
-  //ring06--mod05ch05
-  //ring07--mod05ch06
-  //ring08--mod05ch07
-  //ring09--mod05ch08
-  //ring10--mod05ch09
-  //ring11--mod05ch10
-  //ring12--mod05ch11
-  //ring13--mod05ch12
-  //ring14--mod05ch13
-  //ring15--mod05ch14
-  //ring16--mod05ch15
-  //ring17--mod06ch00
-  //ring18--mod06ch01
-  //ring19--mod06ch02
-  //ring20--mod06ch03
-  //ring21--mod06ch04
-  //ring22--mod06ch05
-  //ring23--mod06ch06
-  //ring24--mod06ch07
-
   TString str_h2_name, str_h2_title;
   TString str_draw, str_cut;
   TString str_cc_name, str_cc_title;

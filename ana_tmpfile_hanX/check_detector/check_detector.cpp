@@ -2,7 +2,7 @@
 void check_detector(int run, int mod)
 {
   TString file_name;
-  file_name = Form("./get_his_raw/run%05d_raw_spe.root", run);
+  file_name = Form("../raw2hist/rootfile/run%05d_raw_spe.root", run);
   TFile *fi = TFile::Open(file_name.Data());
   if(fi->IsZombie()){
     cout << "can not open the file." << endl;
