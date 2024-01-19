@@ -11,7 +11,7 @@ GXX = g++
 
 all:$(out)
 
-$(out): $(sourcefile1)
+$(out): $(sourcefile)
 	$(GXX) $(CFLAGS) $(ROOTCFLAGS) -o $@ $(filter %.cpp ,$(sourcefile)) $(ROOTLIBS)
 
 clean:

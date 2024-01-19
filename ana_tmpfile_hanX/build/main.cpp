@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
   TString file_in = TString::Format("../sort/rootfile/run%05d_sort.root", run);
   std::cout << "analysis " << file_in << std::endl;
   
-  TString file_out = TString::Format("./rootfile_test/run%05d_build_%dns.root", run, (int)TIMEWINDOW);
+  TString file_out = TString::Format("./rootfile/run%05d_build.root", run);
 
   build *bu = new build(file_in.Data(), file_out.Data());
   bu->Process();

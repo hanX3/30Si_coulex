@@ -22,13 +22,29 @@ public:
 
   void Process();
   void GetGeCaliSpeNoCoin();
-  void GetSiNoCaliSpeNoCoin();
+  void GetSiNormalizeSpeNoCoin();
   void GetSiFrontBackCorrelationData();
   void GetGeSiEvent();
   void GetGeSiBackground();
+  void GetGeSiData(TString tr_name, double abs_time1, double abs_time2);
   void SaveFile();
 
 private:
+  std::map<int, std::vector<double>> map_si_cali_data;
+  std::map<int, double> map_si_threshold_data;
+
+private:
+  void ReadSiCaliData();
+  void ReadSiThresholdData();
+
+private:
+  void PrintSiCaliData();
+  void PrintSiThresholdData();
+
+private:
+  double CaliSiEnergy(int adc, int mod, int ch);
+  Short_t GetSiID(int mod, int ch);
+  Double_t GetSiThreshold(int mod, int ch);
 
 private:
   TBenchmark *benchmark;  
@@ -36,7 +52,7 @@ private:
 
 private:
   TFile *file_in;
-  TTree *tr;
+  TTree *tr_in;
   Short_t mod;
   Short_t ch;
   Double_t energy;
