@@ -13,7 +13,7 @@
 class analysis
 {
 public:
-  analysis(const std::string &filename_in, const std::string &filename_out, double phi, double x, double y, double z);
+  analysis(const std::string &filename_in, const std::string &filename_out, double phi=0., double x=0., double y=0., double z=0.);
   virtual ~analysis();
 
   void Process();
@@ -21,23 +21,14 @@ public:
   void SaveFile();
 
 private:
-  std::map<int, std::vector<double>> map_ge_cali_data;
-  std::map<int, std::vector<double>> map_si_cali_data;
   std::map<int, int> map_clover_modch2id;
 
-private:
-  void ReadGeCaliData();
-  void ReadSiCaliData();
-
 public:
-  void PrintGeCaliData();
-  void PrintSiCaliData();
   void PrintCloverIDMap();
 
   double CaliEnergyNoDoppler(int adc, int mod, int ch);
-  double CaliEnergyWithDoppler(int adc_ge, int mod_ge, int ch_ge, int mod_si_ring, int ch_si_ring, int mod_si_sector, int ch_si_sector);
-  double CaliEnergyWithDopplerNew(int adc_ge, int mod_ge, int ch_ge, int mod_si_ring, int ch_si_ring, int mod_si_sector, int ch_si_sector);
-  double NormalizeSi(int adc, int mod, int ch); 
+  double CaliEnergyWithDoppler(int adc_ge, int mod_ge, int ch_ge, int si_ring_id, int si_sector_id);
+  double CaliEnergyWithDopplerNew(int adc_ge, int mod_ge, int ch_ge, int si_ring_id, int si_sector_id);
 
 private:
   angle_info *angle;
@@ -46,9 +37,6 @@ private:
   TBenchmark *benchmark;
   TFile *file_in;
   TTree *tr_event, *tr_bg;
-
-  
-
 
   doppler *doppler_event, *doppler_bg;
 

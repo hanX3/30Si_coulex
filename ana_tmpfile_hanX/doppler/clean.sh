@@ -7,8 +7,6 @@ if [ $# -ne 1 ];then
 fi
 
 rm -rf src_${1}
-cd ./ana
-rm -rf ana_${1}
-cd ../
 cd ./rootfile
 rm -rf rootfile_${1}
+cd ..
