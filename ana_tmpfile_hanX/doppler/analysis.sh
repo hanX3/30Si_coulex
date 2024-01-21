@@ -23,3 +23,7 @@ do
   ./analysis $run ${2} ${3} ${4} ${5}
 done
 
+cd ../rootfile/rootfile_${1}
+hadd doppler_r804_825.root run0080*.root run0081*.root run00820_doppler.root run00821_doppler.root run00822_doppler.root run00824_doppler.root run00825_doppler.root
+hadd doppler_r826_888.root run00826_doppler.root run00827_doppler.root run00828_doppler.root run00829_doppler.root run0083*.root run0084*.root run0085*.root run0086*.root run0087*.root run008*.root
+cd ../../

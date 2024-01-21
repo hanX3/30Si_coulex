@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Tue Nov 28 10:36:20 2023 by ROOT version 6.24/02
-// from TTree tr_event/timewindow_40
-// found on file: run00804_build_40ns.root
+// Fri Jan 19 10:50:32 2024 by ROOT version 6.24/02
+// from TTree tr_event/timewindow_2000
+// found on file: ../../build/rootfile/run00804_build.root
 //////////////////////////////////////////////////////////
 
 #ifndef doppler_h
@@ -25,28 +25,32 @@ public :
    Int_t           n_Si_ring;
    Short_t         Si_ring_mod[5];   //[n_Si_ring]
    Short_t         Si_ring_ch[5];   //[n_Si_ring]
+   Short_t         Si_ring_id[5];   //[n_Si_ring]
    Double_t        Si_ring_adc[5];   //[n_Si_ring]
    Long64_t        Si_ring_ts[5];   //[n_Si_ring]
    Int_t           n_Si_sector;
-   Short_t         Si_sector_mod[5];   //[n_Si_sector]
-   Short_t         Si_sector_ch[5];   //[n_Si_sector]
-   Double_t        Si_sector_adc[5];   //[n_Si_sector]
-   Long64_t        Si_sector_ts[5];   //[n_Si_sector]
+   Short_t         Si_sector_mod[7];   //[n_Si_sector]
+   Short_t         Si_sector_ch[7];   //[n_Si_sector]
+   Short_t         Si_sector_id[7];   //[n_Si_sector]
+   Double_t        Si_sector_adc[7];   //[n_Si_sector]
+   Long64_t        Si_sector_ts[7];   //[n_Si_sector]
    Int_t           n_Ge;
-   Short_t         Ge_mod[5];   //[n_Ge]
-   Short_t         Ge_ch[5];   //[n_Ge]
-   Double_t        Ge_energy[5];   //[n_Ge]
-   Long64_t        Ge_ts[5];   //[n_Ge]
+   Short_t         Ge_mod[6];   //[n_Ge]
+   Short_t         Ge_ch[6];   //[n_Ge]
+   Double_t        Ge_energy[6];   //[n_Ge]
+   Long64_t        Ge_ts[6];   //[n_Ge]
 
    // List of branches
    TBranch        *b_n_Si_ring;   //!
    TBranch        *b_Si_ring_mod;   //!
    TBranch        *b_Si_ring_ch;   //!
+   TBranch        *b_Si_ring_id;   //!
    TBranch        *b_Si_ring_adc;   //!
    TBranch        *b_Si_ring_ts;   //!
    TBranch        *b_n_Si_sector;   //!
    TBranch        *b_Si_sector_mod;   //!
    TBranch        *b_Si_sector_ch;   //!
+   TBranch        *b_Si_sector_id;   //!
    TBranch        *b_Si_sector_adc;   //!
    TBranch        *b_Si_sector_ts;   //!
    TBranch        *b_n_Ge;   //!
@@ -122,11 +126,13 @@ void doppler::Init(TTree *tree)
    fChain->SetBranchAddress("n_Si_ring", &n_Si_ring, &b_n_Si_ring);
    fChain->SetBranchAddress("Si_ring_mod", Si_ring_mod, &b_Si_ring_mod);
    fChain->SetBranchAddress("Si_ring_ch", Si_ring_ch, &b_Si_ring_ch);
+   fChain->SetBranchAddress("Si_ring_id", Si_ring_id, &b_Si_ring_id);
    fChain->SetBranchAddress("Si_ring_adc", Si_ring_adc, &b_Si_ring_adc);
    fChain->SetBranchAddress("Si_ring_ts", Si_ring_ts, &b_Si_ring_ts);
    fChain->SetBranchAddress("n_Si_sector", &n_Si_sector, &b_n_Si_sector);
    fChain->SetBranchAddress("Si_sector_mod", Si_sector_mod, &b_Si_sector_mod);
    fChain->SetBranchAddress("Si_sector_ch", Si_sector_ch, &b_Si_sector_ch);
+   fChain->SetBranchAddress("Si_sector_id", Si_sector_id, &b_Si_sector_id);
    fChain->SetBranchAddress("Si_sector_adc", Si_sector_adc, &b_Si_sector_adc);
    fChain->SetBranchAddress("Si_sector_ts", Si_sector_ts, &b_Si_sector_ts);
    fChain->SetBranchAddress("n_Ge", &n_Ge, &b_n_Ge);
