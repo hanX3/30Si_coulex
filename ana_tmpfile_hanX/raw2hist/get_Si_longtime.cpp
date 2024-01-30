@@ -66,7 +66,7 @@ void get_Si_longtime()
     }
   }
 
-  TFile *fo = new TFile("Si_longtime.root", "recreate");
+  TFile *fo = new TFile("./rootfile/Si_longtime.root", "recreate");
   fo->cd();
   for(int i=0;i<24+32;i++){
     hh[i]->Write();

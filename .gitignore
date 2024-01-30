@@ -3,7 +3,5 @@
 *.txt
 *.offset
 *.so
-sort
-build
-analysis
+.fuse_hidden*
 png/

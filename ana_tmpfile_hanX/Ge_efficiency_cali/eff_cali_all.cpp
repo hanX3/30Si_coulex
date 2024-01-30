@@ -1,4 +1,6 @@
 //
+// run01000: close
+// run02000: far
 TFile *fi1 = TFile::Open("../sort/rootfile/run01000_sort.root");
 TFile *fi2 = TFile::Open("../addback/rootfile/run01000_addback.root");
 TTree* tr[2];
@@ -327,8 +329,8 @@ void eff_cali_all(int tr_id)
 void eff_compare()
 {
   //
-  //eff_cali_all(0); 
-  //eff_cali_all(1);
+  eff_cali_all(0); 
+  eff_cali_all(1);
 
   ifstream fi[2];
   fi[0].open(TString::Format("./dat/all_area.txt").Data()); 
@@ -394,7 +396,7 @@ void eff_compare()
   double tf_max[2];
   std::map<double, double> m_s2;
 
-  for(int i=0;i<1;i++){
+  for(int i=0;i<2;i++){
     m_s2.clear();
     fi[i].seekg(0, std::ios::beg);
 
@@ -407,8 +409,12 @@ void eff_compare()
     }
 
     double *par = eff_fit(m_s2);
+    tf[i]->SetParameters(par);
     for(int j=0;j<7;j++){
       fo[i] << j << " " << par[j] << std::endl;
+    }
+    for(int j=0;j<2000;j++){
+      fo[i] << j << " " << tf[i]->Eval((double)j) << endl;
     }
 
     fo[i].close();

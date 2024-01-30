@@ -319,8 +319,8 @@ void eff_cali_single_clover(int clover_id, int tr_id)
 void eff_compare(int clover_id)
 {
   //
-  //eff_cali_single_clover(clover_id, 0); 
-  //eff_cali_single_clover(clover_id, 1);
+  eff_cali_single_clover(clover_id, 0); 
+  eff_cali_single_clover(clover_id, 1);
 
   ifstream fi[2];
   fi[0].open(TString::Format("./dat/clover%02d_area.txt",clover_id).Data()); 

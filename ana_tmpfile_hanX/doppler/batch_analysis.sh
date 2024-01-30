@@ -11,3 +11,5 @@
 # nohup ./analysis.sh 7 4 0 0 0 & 
 # nohup ./analysis.sh 8 1 0 0 0 & 
 
+# nohup ./analysis.sh 9 2 0 0 0 & 
+

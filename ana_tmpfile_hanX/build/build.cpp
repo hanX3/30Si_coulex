@@ -292,6 +292,7 @@ void build::GetSiFrontBackCorrelationData()
         }
         */
 
+        /*
         if(n_Si_ring==2 && n_Si_sector==1 && TMath::Abs(Si_ring_id[0]-Si_ring_id[1])==1){
           if(Si_ring_adc[0]>Si_ring_adc[1]){
             Si_ring_adc[0] += Si_ring_adc[1];
@@ -316,6 +317,7 @@ void build::GetSiFrontBackCorrelationData()
           }
           n_Si_sector--;
         }
+        */
 
         //
         file_out->cd();

@@ -1,6 +1,8 @@
 #ifndef SET_H
 #define SET_H
 
+ #define SIGLEGEVSSINGLESI
+
 constexpr double BINNUMBER = 2048.;
 
 constexpr double CUTGEENERGY = 200.;

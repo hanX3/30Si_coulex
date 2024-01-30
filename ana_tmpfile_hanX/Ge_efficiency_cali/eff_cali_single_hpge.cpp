@@ -1,7 +1,5 @@
 //
-using namespace RooFit;
-
-TFile *fi = TFile::Open("../sort/rootfile/run02000_sort.root");
+TFile *fi = TFile::Open("../sort/rootfile/run01000_sort.root");
 TTree *tr = (TTree*)fi->Get("tree");
 
 //
@@ -29,16 +27,73 @@ void get_spec_data(int mod, int ch)
 }
 
 //
-void eff_cali_single(int mod, int ch)
+double eff_fun(double *x, double *p)
+{
+  double x1 = log(x[0]/100.);
+  double x2 = log(x[0]/1000.);
+
+  double z1 = pow(p[0]+p[1]*x1+p[2]*x1*x1, -p[6]);
+  double z2 = pow(p[3]+p[4]*x2+p[5]*x2*x2, -p[6]);
+
+  double eff = exp(pow(z1+z2, -1./p[6]));
+
+  return eff;
+}
+
+//
+void eff_fit(map<double, double> &m)
+{
+  TF1 *tf = new TF1("tf", eff_fun, 50, 2000, 7);
+  
+  /*
+  tf->SetParameters(5.42, 3.73, 0., 7.03, -0.65, -0.14, 15.);
+  delete gROOT->GetListOfCanvases()->FindObject("cc");
+  TCanvas *cc = new TCanvas("cc", "", 0, 0, 480, 360);
+  cc->cd();
+  tf->Draw();
+  */
+
+  TGraph *gr = new TGraph();
+
+  int i = 0;
+  for(auto it=m.begin();it!=m.end();it++){
+    gr->SetPoint(i, it->first, it->second);
+    i++;
+  }
+
+  delete gROOT->GetListOfCanvases()->FindObject("cc");
+  TCanvas *cc = new TCanvas("cc", "", 0, 0, 480, 360);
+  cc->cd();
+  gr->Draw("AP*");
+
+  tf->SetParameter(0, 5.);
+  tf->SetParameter(1, 4.);
+  tf->FixParameter(2, 0.);
+  tf->SetParameter(3, 7.);
+  tf->SetParameter(4, -0.5);
+  tf->SetParameter(5, -0.1);
+  tf->FixParameter(6, 15.);
+
+  gr->Fit("tf");
+}
+
+//
+void eff_cali_single_hpge(int mod, int ch)
 {
   //
   map<double, double> m_133Ba;
+  /*
   m_133Ba.insert(std::make_pair(80.999, 34.06));
   m_133Ba.insert(std::make_pair(276.404, 7.26));
   m_133Ba.insert(std::make_pair(302.858, 18.58));
   m_133Ba.insert(std::make_pair(356.014, 62.1));
   m_133Ba.insert(std::make_pair(383.859, 9.41));
-  
+  */
+  m_133Ba.insert(std::make_pair(80.999, 34.11));
+  m_133Ba.insert(std::make_pair(302.858, 18.30));
+  m_133Ba.insert(std::make_pair(356.014, 61.94));
+  m_133Ba.insert(std::make_pair(383.859, 8.905));
+
   map<double, pair<double, double>> m_133Ba_x1x2;
   m_133Ba_x1x2[80.999] = make_pair(0.98, 1.02);
   m_133Ba_x1x2[276.404] = make_pair(0.99, 1.01);
@@ -48,17 +103,29 @@ void eff_cali_single(int mod, int ch)
 
   //
   map<double, double> m_152Eu;
+  /*
   m_152Eu.insert(std::make_pair(121.783, 28));
   m_152Eu.insert(std::make_pair(244.692, 7.4));
   m_152Eu.insert(std::make_pair(344.275, 26.2));
-  m_152Eu.insert(std::make_pair(411.115, 3.2));
+  m_152Eu.insert(std::make_pair(411.115, 2.2));
   m_152Eu.insert(std::make_pair(443.976, 3.04));
   m_152Eu.insert(std::make_pair(778.303, 12.7));
   m_152Eu.insert(std::make_pair(867.388, 4.09));
   m_152Eu.insert(std::make_pair(964.131, 14.23));
   m_152Eu.insert(std::make_pair(1112.116, 13.35));
   m_152Eu.insert(std::make_pair(1408.001, 20.57));
-
+  */
+  m_152Eu.insert(std::make_pair(121.783, 28.37));
+  m_152Eu.insert(std::make_pair(244.692, 7.53));
+  m_152Eu.insert(std::make_pair(344.275, 26.57));
+  m_152Eu.insert(std::make_pair(411.115, 2.238));
+  m_152Eu.insert(std::make_pair(443.976, 3.125));
+  m_152Eu.insert(std::make_pair(778.303, 12.97));
+  m_152Eu.insert(std::make_pair(867.388, 4.214));
+  m_152Eu.insert(std::make_pair(964.131, 14.63));
+  m_152Eu.insert(std::make_pair(1112.116, 13.54));
+  m_152Eu.insert(std::make_pair(1408.001, 20.85));
+  
   map<double, pair<double, double>> m_152Eu_x1x2;
   m_152Eu_x1x2[121.783] = make_pair(0.99, 1.01);
   m_152Eu_x1x2[244.692] = make_pair(0.99, 1.01);
@@ -87,6 +154,11 @@ void eff_cali_single(int mod, int ch)
   h_sub->SetLineColor(4);
   cc->cd();
   h_sub->Draw();
+
+  double sum;
+  ofstream fo;
+  fo.open(TString::Format("mod%02d_ch%02d_area.txt",mod,ch).Data());
+  map<double, double> m_s;
 
   int b1 = 0;
   int b2 = 0;
@@ -121,6 +193,12 @@ void eff_cali_single(int mod, int ch)
     int b2 = (int)((tf->GetParameter(1)+2.0*tf->GetParameter(2)+0.5)*2.);
     cout << "b1 " << b1 << " " << h_sub->GetBinContent(b1) << endl;
     cout << "b2 " << b2 << " " << h_sub->GetBinContent(b2) << endl;
+
+    sum = 0;
+    for(int i=b1;i<=b2;i++){
+      sum += h_sub->GetBinContent(i);
+    }
+    m_s.insert(std::make_pair(it->first, sum)); 
 
     TLine *l1 = new TLine(h_sub->GetBinCenter(b1), 0., h_sub->GetBinCenter(b1), h_sub->GetBinContent(b_max));
     TLine *l2 = new TLine(h_sub->GetBinCenter(b2), 0., h_sub->GetBinCenter(b2), h_sub->GetBinContent(b_max));
@@ -168,6 +246,12 @@ void eff_cali_single(int mod, int ch)
     cout << "b1 " << b1 << " " << h_sub->GetBinContent(b1) << endl;
     cout << "b2 " << b2 << " " << h_sub->GetBinContent(b2) << endl;
 
+    sum = 0;
+    for(int i=b1;i<=b2;i++){
+      sum += h_sub->GetBinContent(i);
+    }
+    m_s.insert(std::make_pair(it->first, sum)); 
+
     TLine *l1 = new TLine(h_sub->GetBinCenter(b1), 0., h_sub->GetBinCenter(b1), h_sub->GetBinContent(b_max));
     TLine *l2 = new TLine(h_sub->GetBinCenter(b2), 0., h_sub->GetBinCenter(b2), h_sub->GetBinContent(b_max));
     l1->SetLineColor(1);
@@ -183,6 +267,24 @@ void eff_cali_single(int mod, int ch)
     cc->SaveAs(TString::Format("./png/152Eu_%dkeV.png",(int)it->first).Data());
   }
 
-  //get_spec_data(mod, ch);
-  // draw_spec(mod, ch);
+  //using 356.014(133Ba) and 344.275(152Eu) normlize
+  map<double, double> m_s2;
+  double frac = (m_s[356.014]/m_133Ba[356.014])/(m_s[344.275]/m_152Eu[344.275]);
+  cout << "frac " << frac << endl; 
+  for(auto it=m_133Ba.begin();it!=m_133Ba.end();it++){
+    m_s2.insert(std::make_pair(it->first, m_s[it->first]/it->second));
+  }
+
+  for(auto it=m_152Eu.begin();it!=m_152Eu.end();it++){
+    m_s2.insert(std::make_pair(it->first, frac*m_s[it->first]/it->second));
+  }
+
+  for(auto it=m_s2.begin();it!=m_s2.end();it++){
+    fo << it->first << " " << it->second << endl;
+  }
+  fo << endl;
+  fo.close();
+
+  //
+  eff_fit(m_s2);  
 }
