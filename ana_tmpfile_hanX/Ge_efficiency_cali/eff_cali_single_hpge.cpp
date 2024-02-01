@@ -75,6 +75,11 @@ void eff_fit(map<double, double> &m)
   tf->FixParameter(6, 15.);
 
   gr->Fit("tf");
+
+  gr->GetXaxis()->SetRangeUser(0, 3000);
+  gr->GetYaxis()->SetRangeUser(0, 2500);
+  cc->Update();
+  cc->SaveAs(TString::Format("./png/single_hpge.png").Data());
 }
 
 //

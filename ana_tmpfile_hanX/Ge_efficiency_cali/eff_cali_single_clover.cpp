@@ -319,8 +319,8 @@ void eff_cali_single_clover(int clover_id, int tr_id)
 void eff_compare(int clover_id)
 {
   //
-  eff_cali_single_clover(clover_id, 0); 
-  eff_cali_single_clover(clover_id, 1);
+  //eff_cali_single_clover(clover_id, 0); 
+  //eff_cali_single_clover(clover_id, 1);
 
   ifstream fi[2];
   fi[0].open(TString::Format("./dat/clover%02d_area.txt",clover_id).Data()); 
@@ -356,9 +356,8 @@ void eff_compare(int clover_id)
     gr[i]->SetMarkerStyle(5);
   }
 
-  delete gROOT->GetListOfCanvases()->FindObject("cc");
-  TCanvas *cc = new TCanvas("cc", "", 0, 0, 480, 360);
-  cc->cd();
+  TCanvas *cc1 = new TCanvas("cc1", "", 0, 0, 480, 360);
+  cc1->cd();
 
   gr[0]->SetMarkerColor(4);
   gr[1]->SetMarkerColor(2);
@@ -369,9 +368,10 @@ void eff_compare(int clover_id)
   tf[0]->SetLineColor(4);
   tf[1]->SetLineColor(2);
 
+  gr[0]->GetYaxis()->SetRangeUser(0, 7000.);
   mg->Draw("ap");
   tf[0]->Draw("same");
   tf[1]->Draw("same");
 
-  cc->Update();
+  cc1->SaveAs("./png/single_clover.png");
 }
