@@ -80,6 +80,9 @@ void get_input_si()
     cout << v_angle_si[i] << " " << v_energy_si[i]  << endl;
     gr->SetPoint(i, v_angle_si[i], 30.*v_energy_si[i]);
   }
+  gr->SetTitle("");
+  gr->GetXaxis()->SetTitle("Angle 30Si in Lab");
+  gr->GetYaxis()->SetTitle("Energy of 30Si [MeV]");
 
   TCanvas *cc = new TCanvas("cc", "", 0, 0, 480, 360);
   cc->cd();
@@ -90,11 +93,9 @@ void get_input_si()
 
   //
   ofstream fo;
-  fo.open("input.txt");
-  double beta[24];
+  fo.open("input_si.txt");
   for(int i=0;i<24;i++){
     cout << ring_angle_down_stream[i] << endl;
-    beta[i] = sqrt(tf->Eval(ring_angle_down_stream[i])*2./931.5/29.973770136);
     fo << ring_angle_down_stream[i] << " " << tf->Eval(ring_angle_down_stream[i]) << endl;
   }
 
@@ -107,13 +108,16 @@ void get_input_pt()
   get_data();
   get_angle_info_down_stream(8.6);
 
+  // gr1 30Si angle vs. 196Pt angle
   int n1 = v_angle2_si.size();
   TGraph *gr1 = new TGraph(n1);
-  gr1->SetTitle("");
   for(int i=0;i<n1;i++){
     // cout << v_angle2_si[i] << " " << v_angle2_pt[i] << endl;
     gr1->SetPoint(i, v_angle2_si[i], v_angle2_pt[i]);
   }
+  gr1->SetTitle("");
+  gr1->GetXaxis()->SetTitle("Angle 30Si in Lab");
+  gr1->GetYaxis()->SetTitle("Angle 196Pt in Lab");
 
   TCanvas *cc1 = new TCanvas("cc1", "", 0, 0, 480, 360);
   cc1->cd();
@@ -131,20 +135,43 @@ void get_input_pt()
     cout << v_angle3_pt[i] << endl;
   }
 
+  //
   int n2 = v_energy_pt.size();
-  TGraph *gr2 = new TGraph(n2);
+  vector<double> v_angle4_pt;
+  vector<double> v_energy4_pt;
   for(int i=0;i<n2;i++){
-    // cout << v_angle_pt[i] << " " << v_energy_pt[i]  << endl;
-    gr2->SetPoint(i, v_angle_pt[i], 196.*v_energy_pt[i]);
+    if(196.*v_energy_pt[i] < 1.0){
+      continue;
+    }else{
+      v_angle4_pt.push_back(v_angle_pt[i]);
+      v_energy4_pt.push_back(196.*v_energy_pt[i]); 
+    }
   }
 
+  int n4 = v_energy4_pt.size();
+  TGraph *gr2 = new TGraph(n4);
+  for(int i=0;i<n4;i++){
+    gr2->SetPoint(i, v_angle4_pt[i], v_energy4_pt[i]);
+  }
+
+  gr2->SetTitle("");
+  gr2->GetXaxis()->SetTitle("Angle 196Pt in Lab");
+  gr2->GetYaxis()->SetTitle("Energy of 196Pt [MeV]");
   TCanvas *cc2 = new TCanvas("cc2", "", 0, 0, 480, 360);
   cc2->cd();
   gr2->Draw();
+  
+  gr2->Fit("pol9", "", "", 20., 80.);
+  TF1 *tf2 = (TF1*)gROOT->GetListOfFunctions()->FindObject("pol9");
 
-  gr2->Fit("pol7", "", "", 10., 70.);
-  TF1 *tf2 = (TF1*)gROOT->GetListOfFunctions()->FindObject("pol7");
+  //
+  ofstream fo;
+  fo.open("input_pt.txt");
+  for(int i=0;i<24;i++){
+    cout << v_angle3_pt[i] << " " << tf2->Eval(v_angle3_pt[i]) << endl;
+    fo << v_angle3_pt[i] << " " << tf2->Eval(v_angle3_pt[i]) << endl;
+  }
 
-
+  fo.close();
 }
 
