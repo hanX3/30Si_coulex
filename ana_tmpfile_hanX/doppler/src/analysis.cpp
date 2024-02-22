@@ -135,7 +135,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
   //for ring24
   TH1D *h_ge_no_doppler_all_si_ring[24];
   TH1D *h_ge_doppler_all_si_ring[24];
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
   TH1D *h_ge_no_doppler_ring1_1_si_ring[24], *h_ge_no_doppler_ring1_2_si_ring[24], *h_ge_no_doppler_ring1_3_si_ring[24], *h_ge_no_doppler_ring1_4_si_ring[24];
   TH1D *h_ge_doppler_ring1_1_si_ring[24], *h_ge_doppler_ring1_2_si_ring[24], *h_ge_doppler_ring1_3_si_ring[24], *h_ge_doppler_ring1_4_si_ring[24];
   TH1D *h_ge_no_doppler_ring2_2_si_ring[24], *h_ge_no_doppler_ring2_4_si_ring[24], *h_ge_no_doppler_ring2_6_si_ring[24], *h_ge_no_doppler_ring2_8_si_ring[24];
@@ -155,7 +155,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
     str_hist = TString::Format("h_%s_ge_doppler_all_si_ring%d", info.Data(), i);
     h_ge_doppler_all_si_ring[i] = new TH1D(str_hist.Data(), str_hist.Data(), BINNUMBER, 0, 4096);
     
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
     //ring1
     str_hist = TString::Format("h_%s_ge_no_doppler_ring1_1_si_ring%d", info.Data(), i);
     h_ge_no_doppler_ring1_1_si_ring[i] = new TH1D(str_hist.Data(), str_hist.Data(), BINNUMBER, 0, 4096);
@@ -267,7 +267,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
   TH1D *h_ge_no_doppler_all_si_sector[32];
   TH1D *h_ge_doppler_all_si_sector[32];
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
   TH1D *h_ge_no_doppler_ring1_si_sector[4*32], *h_ge_doppler_ring1_si_sector[4*32];
   TH1D *h_ge_no_doppler_ring2_si_sector[4*32], *h_ge_doppler_ring2_si_sector[4*32];
   TH1D *h_clover_no_doppler_ring3_1_si_sector[4*32], *h_clover_doppler_ring3_1_si_sector[4*32];
@@ -284,7 +284,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
     h_ge_doppler_all_si_sector[i] = new TH1D(str_hist.Data(), str_hist.Data(), BINNUMBER, 0, 4096);
   }  
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
   for(int i=0;i<4;i++){
     for(int j=0;j<32;j++){
       str_hist = TString::Format("h_%s_ge_no_doppler_ring1_%d_si_sector%d", info.Data(), i+1, j);
@@ -429,7 +429,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
             h_ge_no_doppler_ring1[dp->Ge_ch[j]]->Fill(energy_no_doppler);
             h_ge_doppler_ring1[dp->Ge_ch[j]]->Fill(energy_doppler);
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
             //for si ring
             if(dp->Ge_ch[j] == 0){
               h_ge_no_doppler_ring1_1_si_ring[ring_idd]->Fill(energy_no_doppler);
@@ -455,7 +455,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
             h_ge_no_doppler_ring2[dp->Ge_ch[j]-4]->Fill(energy_no_doppler);
             h_ge_doppler_ring2[dp->Ge_ch[j]-4]->Fill(energy_doppler);
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
             //for si ring
             if(dp->Ge_ch[j] == 4){
               h_ge_no_doppler_ring2_2_si_ring[ring_idd]->Fill(energy_no_doppler);
@@ -483,7 +483,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
             h_ge_no_doppler_ring4[dp->Ge_ch[j]]->Fill(energy_no_doppler);
             h_ge_doppler_ring4[dp->Ge_ch[j]]->Fill(energy_doppler);
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
             //for si ring
             if(dp->Ge_ch[j] == 0){
               h_ge_no_doppler_ring4_1_si_ring[ring_idd]->Fill(energy_no_doppler);
@@ -510,7 +510,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
             h_ge_no_doppler_ring5[dp->Ge_ch[j]-4]->Fill(energy_no_doppler);
             h_ge_doppler_ring5[dp->Ge_ch[j]-4]->Fill(energy_doppler);
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
             //for si ring
             if(dp->Ge_ch[j] == 4){
               h_ge_no_doppler_ring5_1_si_ring[ring_idd]->Fill(energy_no_doppler);
@@ -538,7 +538,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
           h_clover_no_doppler_ring3[map_clover_modch2id[key]]->Fill(energy_no_doppler);
           h_clover_doppler_ring3[map_clover_modch2id[key]]->Fill(energy_doppler);
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
           //for si ring
           if(key == 200){
             h_ge_no_doppler_ring3_1a_si_ring[ring_idd]->Fill(energy_no_doppler);
@@ -589,7 +589,7 @@ void analysis::ProcessDoppler(doppler *dp, TString info)
     h_ge_doppler_all_si_sector[i]->Write();
   }
 
-#ifdef SIGLEGEVSSINGLESI
+#ifdef SINGLEGEVSSINGLESI
   TDirectory *dir_ge[5];//5 rings
   TString str_dir_name;
   for(int i=0;i<5;i++){

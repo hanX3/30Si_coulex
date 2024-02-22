@@ -1,5 +1,6 @@
 #include "angle_info.h"
 #include <iostream>
+#include <fstream>
 
 #include <stdlib.h>
 #include <cmath>
@@ -36,6 +37,7 @@ angle_info::~angle_info()
 //
 double angle_info::GetCosThetaParticleGamma(int mod_ge, int ch_ge, int si_ring_id, int si_sector_id)
 {
+#ifdef DOPPLERSI
   double rp = sqrt(d_target_si*d_target_si + (r_min+(double)si_ring_id)*(r_min+(double)si_ring_id));
   double xp = rp*sin(si_theta[si_ring_id]*PI/180.)*cos(si_phi[si_sector_id]*PI/180.);
   double yp = rp*sin(si_theta[si_ring_id]*PI/180.)*sin(si_phi[si_sector_id]*PI/180.);
@@ -54,6 +56,28 @@ double angle_info::GetCosThetaParticleGamma(int mod_ge, int ch_ge, int si_ring_i
   //std::cout << "rp " << rp << " rr " << rr << " xx+yy+zz " << xx+yy+zz << std::endl;
 
   return (xx+yy+zz)/rr;
+#endif
+
+#ifdef DOPPLERPT
+  double rp = d_target_si/cos(si_theta[si_ring_id]*PI/180.);
+  double xp = rp*sin(si_theta[si_ring_id]*PI/180.)*cos(si_phi[si_sector_id]*PI/180.);
+  double yp = rp*sin(si_theta[si_ring_id]*PI/180.)*sin(si_phi[si_sector_id]*PI/180.);
+  double zp = rp*cos(si_theta[si_ring_id]*PI/180.);
+
+  double xg = sin(ge_theta[mod_ge][ch_ge]*PI/180.)*cos(ge_phi[mod_ge][ch_ge]*PI/180.);
+  double yg = sin(ge_theta[mod_ge][ch_ge]*PI/180.)*sin(ge_phi[mod_ge][ch_ge]*PI/180.);
+  double zg = cos(ge_theta[mod_ge][ch_ge]*PI/180.);
+
+  double xx = (xp-x_bp)*xg;
+  double yy = (yp-y_bp)*yg;
+  double zz = (zp-z_bp)*zg;
+  double rr = sqrt((xp-x_bp)*(xp-x_bp)+(yp-y_bp)*(yp-y_bp)+(zp-z_bp)*(zp-z_bp));
+
+  //std::cout << "x_bp " << x_bp << " y_bp " << y_bp << " z_bp " << z_bp << std::endl;
+  //std::cout << "rp " << rp << " rr " << rr << " xx+yy+zz " << xx+yy+zz << std::endl;
+
+  return (xx+yy+zz)/rr;
+#endif
 }
 
 //
@@ -85,7 +109,8 @@ void angle_info::InitGeThtea()
   ge_theta[1][6] = 26.15;
   ge_theta[1][7] = 26.15;
 
-  //mod2 3-1,3-2,3-3
+  /*
+  // mod2 3-1,3-2,3-3
   ge_theta[2][0] = 90.0;
   ge_theta[2][1] = 90.0;
   ge_theta[2][2] = 90.0;
@@ -99,7 +124,7 @@ void angle_info::InitGeThtea()
   ge_theta[2][10] = 90.0;
   ge_theta[2][11] = 90.0;
   
-  //mod3 3-4,3-5,3-6
+  // mod3 3-4,3-5,3-6
   ge_theta[3][0] = 90.0;
   ge_theta[3][1] = 90.0;
   ge_theta[3][2] = 90.0;
@@ -109,7 +134,7 @@ void angle_info::InitGeThtea()
   ge_theta[3][10] = 90.0;
   ge_theta[3][11] = 90.0;
   
-  //mod4 3-7,3-8
+  // mod4 3-7,3-8
   ge_theta[4][0] = 90.0;
   ge_theta[4][1] = 90.0;
   ge_theta[4][2] = 90.0;
@@ -122,7 +147,45 @@ void angle_info::InitGeThtea()
   ge_theta[4][9] = 90.0;
   ge_theta[4][10] = 90.0;
   ge_theta[4][11] = 90.0;
+  */
 
+  // mod2 3-1,3-2,3-3
+  ge_theta[2][0] = 90.0+1.;
+  ge_theta[2][1] = 90.0-1.;
+  ge_theta[2][2] = 90.0-1.;
+  ge_theta[2][3] = 90.0+1.;
+  ge_theta[2][4] = 90.0+1.;
+  ge_theta[2][5] = 90.0-1.;
+  ge_theta[2][6] = 90.0-1.;
+  ge_theta[2][7] = 90.0+1.;
+  ge_theta[2][8] = 90.0+5.;
+  ge_theta[2][9] = 90.0-5.;
+  ge_theta[2][10] = 90.0-5.;
+  ge_theta[2][11] = 90.0+5.;
+  
+  // mod3 3-4,3-5,3-6
+  ge_theta[3][0] = 90.0;
+  ge_theta[3][1] = 90.0;
+  ge_theta[3][2] = 90.0;
+  ge_theta[3][3] = 90.0;
+  ge_theta[3][8] = 90.0;
+  ge_theta[3][9] = 90.0;
+  ge_theta[3][10] = 90.0;
+  ge_theta[3][11] = 90.0;
+  
+  // mod4 3-7,3-8
+  ge_theta[4][0] = 90.0-2.;
+  ge_theta[4][1] = 90.0+2.;
+  ge_theta[4][2] = 90.0+2.;
+  ge_theta[4][3] = 90.0-2.;
+  ge_theta[4][4] = 90.0;
+  ge_theta[4][5] = 90.0;
+  ge_theta[4][6] = 90.0;
+  ge_theta[4][7] = 90.0;
+  ge_theta[4][8] = 90.0+5.;
+  ge_theta[4][9] = 90.0-5.;
+  ge_theta[4][10] = 90.0-5.;
+  ge_theta[4][11] = 90.0+5.;
 }
 
 //
@@ -192,46 +255,78 @@ void angle_info::InitGePhi()
 //
 void angle_info::InitBeta()
 {
-  beta[0] = 0.0850104;
-  beta[1] = 0.0842222;
-  beta[2] = 0.0835307;
-  beta[3] = 0.0829372;
-  beta[4] = 0.0822243;
-  beta[5] = 0.0816107;
-  beta[6] = 0.0809897;
-  beta[7] = 0.0704709;
-  beta[8] = 0.0798328;
-  beta[9] = 0.0792996;
-  beta[10] = 0.0787599;
-  beta[11] = 0.0782138;
-  beta[12] = 0.0776624;
-  beta[13] = 0.0772186;
-  beta[14] = 0.0766544;
-  beta[15] = 0.0762019;
-  beta[16] = 0.0757438;
-  beta[17] = 0.0751612;
-  beta[18] = 0.0746938;
-  beta[19] = 0.0742205;
-  beta[20] = 0.0737427;
-  beta[21] = 0.0732602;
-  beta[22] = 0.0727731;
-  beta[23] = 0.0722811;
+#ifdef DOPPLERSI
+  std::ifstream fi;
+  fi.open("../../../reaction_kinematics/beta_si.txt");
+  if(!fi){
+    std::cout << "can not open beta file" << std::endl;
+    return;
+  }
+
+  for(int i=0;i<24;i++){
+    fi >> beta[i];
+  }
+  
+  fi.close();
+#endif
+
+#ifdef DOPPLERPT
+  std::ifstream fi;
+  fi.open("../../../reaction_kinematics/theta_beta_pt.txt");
+  if(!fi){
+    std::cout << "can not open beta file" << std::endl;
+    return;
+  }
+
+  double k;
+  for(int i=0;i<24;i++){
+    fi >> k >> beta[i];
+  }
+  
+  fi.close();
+#endif
 }
 
 //
 void angle_info::InitSiThtea()
 {
+#ifdef DOPPLERSI
   for(int i=0;i<24;i++){
     si_theta[i] = atan((r_min+(double)i)/d_target_si)/PI*180.;
-  } 
+  }
+#endif
+
+#ifdef DOPPLERPT
+  std::ifstream fi;
+  fi.open("../../../reaction_kinematics/theta_beta_pt.txt");
+  if(!fi){
+    std::cout << "can not open beta file" << std::endl;
+    return;
+  }
+
+  double k;
+  for(int i=0;i<24;i++){
+    fi >> si_theta[i] >> k;
+  }
+  
+  fi.close();
+#endif
 }
 
 //
 void angle_info::InitSiPhi()
 {
+#ifdef DOPPLERSI
   for(int i=0;i<32;i++){
     si_phi[i] = 90 + 11.25*(double)i - 20. + phi_rotation;
   }
+#endif
+
+#ifdef DOPPLERPT
+  for(int i=0;i<32;i++){
+    si_phi[i] = 180 + (90 + 11.25*(double)i - 20. + phi_rotation);
+  }
+#endif
 }
 
 //
