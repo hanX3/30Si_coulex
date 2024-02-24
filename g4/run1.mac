@@ -1,0 +1,13 @@
+# Can be run in batch, without graphic
+# or interactively: Idle> /control/execute run1.mac
+#
+# Initialize kernel
+/run/initialize
+#
+#/tracking/verbose 0
+#/hits/verbose 2
+
+/gun/particle ion
+/gun/ion 91 241
+/gun/energy 300 MeV
+/run/beamOn 30000
