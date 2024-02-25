@@ -42,44 +42,53 @@ public:
   void Place(G4ThreeVector p);
   void Report();
 
-  G4LogicalVolume *GetLog() { return hpge_log; };
+  G4LogicalVolume *GetLog() { return hpge_crystal_log; };
 
   void SetId(G4int i) { id = i; };
-  void SetRingId(G4int i) { ring_id = i};
   void SetName();
 
 private:
   void BuildHPGeCrystal();
+  void BuildDetDewar();
   void BuildDetCapsule();
-  void BuildRearAbsorber();
+  void BuildBGOCrystal();
+
+private:
+  G4int id;
 
 private:
   G4Material *mat_air;
   G4Material *mat_vaccum;
+  G4Material *mat_ge;
   G4Material *mat_al;
   G4Material *mat_fe;
   G4Material *mat_cu;
+  G4Material *mat_bgo;
 
-  G4double crystal_outer_r; 
-  G4double crystal_inner_r; 
-  G4double crystal_length;
-  G4double crystal_hole_depth;
-  G4double crystal_edeg_offset_1;
-  G4double crystal_edeg_offset_2;
+  G4double hpge_crystal_outer_r; 
+  G4double hpge_crystal_inner_r; 
+  G4double hpge_crystal_length;
+  G4double hpge_crystal_hole_depth;
+  G4double hpge_crystal_edeg_offset_1;
+  G4double hpge_crystal_edeg_offset_2;
   G4double capsule_width;
   G4double capsule_length;
+  G4double cr2capf;
+  G4double bgo2cap; 
   G4double collimator_width;
 
   //
   G4LogicalVolume *hpge_crystal_log;
+  G4LogicalVolume *det_dewar_log;
   G4LogicalVolume *det_capsule_log;
+  G4LogicalVolume *bgo_crystal_log;
 
   G4VPhysicalVolume *hpge_crystal_phys;
+  G4VPhysicalVolume *det_dewar_phys;
   G4VPhysicalVolume *det_capsule_phys;
+  G4VPhysicalVolume *bgo_crystal_phys;
 //
 };
-
-
 
 //
 }

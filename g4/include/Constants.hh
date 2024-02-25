@@ -27,12 +27,12 @@ constexpr G4double TargetR = 15. * mm;
 constexpr G4double TargetThickness = 0.606 * um;
 
 // hpge
-constexpr G4double CrystalOuterRadius = 35. *mm;
-constexpr G4double CrystalInnerRadius = 5. *mm;
-constexpr G4double CrystalLength = 80. *mm;
-constexpr G4double CrystalHoleDepth = 15. *mm;
-constexpr G4double CrystalEdgeOffset1 = 26. *mm; 
-constexpr G4double CrystalEdgeOffset2 = 28.5 *mm; 
+constexpr G4double HPGeCrystalOuterRadius = 35. *mm;
+constexpr G4double HPGeCrystalInnerRadius = 5. *mm;
+constexpr G4double HPGeCrystalLength = 80. *mm;
+constexpr G4double HPGeCrystalHoleDepth = 15. *mm;
+constexpr G4double HPGeCrystalEdgeOffset1 = 26. *mm; 
+constexpr G4double HPGeCrystalEdgeOffset2 = 28.5 *mm; 
 
 constexpr G4double CapsuleWidth = 1.5 *mm;
 constexpr G4double CapsuleLength = 255. *mm;

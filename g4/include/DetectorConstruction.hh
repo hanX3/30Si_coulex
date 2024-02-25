@@ -2,6 +2,7 @@
 #define DetectorConstruction_h 1
 
 #include "Constants.hh"
+#include "IMPHPGeArray.hh"
 #include "S3SiArray.hh"
 #include "Chamber.hh"
 #include "Target.hh"
@@ -52,6 +53,7 @@ private:
 
   Chamber *chamber;
   Target *target;
+  IMPHPGeArray *imp_hpge_array;
   S3SiArray *s3_si_array;
 
   G4Material* mat_air;

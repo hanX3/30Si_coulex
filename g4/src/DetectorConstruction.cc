@@ -42,7 +42,7 @@ void DetectorConstruction::DefineMaterials()
 G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 {
   // world
-  G4Box *world_solid = new G4Box("World", 0.5 * WorldSizeX, 0.5 * WorldSizeY, 0.5 * WorldSizeZ);
+  G4Box *world_solid = new G4Box("World", 0.5*WorldSizeX, 0.5*WorldSizeY, 0.5*WorldSizeZ);
   world_log = new G4LogicalVolume(world_solid, mat_air, "World");
   world_phys = new G4PVPlacement(nullptr, G4ThreeVector(), world_log, "World", 0, false, 0, check_overlaps);
 
@@ -55,6 +55,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   target = new Target(world_log);
   target->Construct();
   target->Report();
+
+  // imp hpge array
+  G4Box *imp_array_solid = new G4Box("imp_array_solid", 0.2*WorldSizeX, 0.2*WorldSizeY, 0.2*WorldSizeZ);
+  G4LogicalVolume *imp_array_log = new G4LogicalVolume(imp_array_solid, mat_air, "imp_array_log", nullptr, nullptr, nullptr);
+  new G4PVPlacement(nullptr, G4ThreeVector(), imp_array_log, "imp_array_log", world_log, false, 0, false);
+
+  imp_hpge_array = new IMPHPGeArray(imp_array_log);
+  imp_hpge_array->Construct();
+  imp_hpge_array->Report(); 
 
   // s3 si array
   G4Tubs *si_solid = new G4Tubs("si_solid", 0., 2.*(S3SiOuterRadius+1.*mm), (S3Si2Target+1.*mm), 0., twopi);

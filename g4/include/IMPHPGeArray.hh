@@ -1,11 +1,16 @@
 #ifndef IMPHPGeArray_h
 #define IMPHPGeArray_h 1
 
+#include "HPGeSD.hh"
+#include "HPGeDetector.hh"
+
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4Tubs.hh"
-#include "HPGeSD.hh"
+
+#include <iostream>
+#include <vector>
 
 namespace coulex
 {
@@ -14,20 +19,25 @@ namespace coulex
 class IMPHPGeArray   
 {
 public:
-  IMPHPGeArray();
+  IMPHPGeArray(G4LogicalVolume *wl);
   ~IMPHPGeArray();
 
 public:
-  void Placement(G4LogicalVolume *wd, G4double ot);
+  G4LogicalVolume *log;
+
+public:
+  void Construct();
+  void Report();
+  void MakeSensitive(HPGeSD *sd);
 
 private:
-  int n_rings;
-  int n_sectors;
+  G4LogicalVolume *world_log;
+  std::vector<HPGeDetector*> v_hpge;
 
-  G4double inner_radius;
-  G4double outer_radius;
-  G4double thickness;
-
+  G4double distance_hpge;
+  G4double distance_clover;
+  G4double theta_hpge[4];
+  G4double phi_hpge[4][4];
 
 };
 
