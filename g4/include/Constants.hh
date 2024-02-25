@@ -26,11 +26,25 @@ constexpr G4double PipeR = 20. *mm;
 constexpr G4double TargetR = 15. * mm;
 constexpr G4double TargetThickness = 0.606 * um;
 
+// hpge
+constexpr G4double CrystalOuterRadius = 35. *mm;
+constexpr G4double CrystalInnerRadius = 5. *mm;
+constexpr G4double CrystalLength = 80. *mm;
+constexpr G4double CrystalHoleDepth = 15. *mm;
+constexpr G4double CrystalEdgeOffset1 = 26. *mm; 
+constexpr G4double CrystalEdgeOffset2 = 28.5 *mm; 
+
+constexpr G4double CapsuleWidth = 1.5 *mm;
+constexpr G4double CapsuleLength = 255. *mm;
+constexpr G4double CrToCapF = 3. *mm;
+constexpr G4double BGOtoCap = 25. *mm;
+constexpr G4double CollimatorWidth = 85. *mm;
+
+
 // si array
 constexpr G4double S3SiThickness = 300. *um;
 constexpr G4double S3SiOuterRadius = 35 *mm;
 constexpr G4double S3Si2Target = 8.6 *mm;
-
 
 // au layer
 constexpr G4double AuLayerR = 25. * mm;
