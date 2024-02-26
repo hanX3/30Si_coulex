@@ -2,6 +2,8 @@
 #define Constants_h 1
 
 #include "globals.hh"
+#include "cmath"
+
 #include "G4SystemOfUnits.hh"
 
 #define DATAPATH "./data"  // no "/"
@@ -13,9 +15,9 @@ namespace coulex
 // 0b0100 step data
 constexpr G4int MASK = 0b001;
 
-constexpr G4double WorldSizeX = 2. * m;
-constexpr G4double WorldSizeY = 2. * m;
-constexpr G4double WorldSizeZ = 2. * m;
+constexpr G4double WorldSizeX = 5. * m;
+constexpr G4double WorldSizeY = 5. * m;
+constexpr G4double WorldSizeZ = 5. * m;
 
 // chamber
 constexpr G4double ChamberRMin = 125. *mm;
@@ -33,13 +35,31 @@ constexpr G4double HPGeCrystalLength = 80. *mm;
 constexpr G4double HPGeCrystalHoleDepth = 15. *mm;
 constexpr G4double HPGeCrystalEdgeOffset1 = 26. *mm; 
 constexpr G4double HPGeCrystalEdgeOffset2 = 28.5 *mm; 
+constexpr G4double HPGeCrToCapF = 3. *mm;
+constexpr G4double HPGeBGOtoCap = 25. *mm;
 
-constexpr G4double CapsuleWidth = 1.5 *mm;
-constexpr G4double CapsuleLength = 255. *mm;
-constexpr G4double CrToCapF = 3. *mm;
-constexpr G4double BGOtoCap = 25. *mm;
-constexpr G4double CollimatorWidth = 85. *mm;
-
+// clover
+constexpr G4double CloverCrystalOuterRadius = 30. *mm;
+constexpr G4double CloverCrystalInnerRadius = 7. *mm;
+constexpr G4double CloverCrystalLength = 90. *mm; 
+constexpr G4double CloverCrystalHoleDepth = 15. *mm;
+constexpr G4double CloverDistanceOfCrs = 0.6 *mm;
+constexpr G4double CloverCrEdgeCut1 = 26. *mm;
+constexpr G4double CloverCrEdgeCut2 = 28.5 *mm;
+constexpr G4double CloverCrEdgeDepth = 30. *mm;
+constexpr G4double CloverCrEdgeAngle = 22.5 *deg;
+constexpr G4double CloverCapWidth = 2.5 *mm;
+constexpr G4double CloverCapsuleLength = 148. *mm; 
+constexpr G4double CloverCr2CapF = 14. *mm;
+constexpr G4double CloverCr2CapE = 5. *mm;
+constexpr G4double CloverFrontShieldL = 123. *mm;
+constexpr G4double CloverFrontShieldWidth = 10. *mm;
+constexpr G4double CloverFrontShield1 = -0.3 *mm;
+constexpr G4double CloverFrontShield2 = 1. *mm; 
+constexpr G4double CloverBGOShieldWidth = 20. *mm;
+constexpr G4double CloverBGOShieldEdgeDepth = 0.6*CloverBGOShieldWidth/tan(CloverCrEdgeAngle); 
+constexpr G4double CloverBGOShield2Cap = 3.7 *mm;
+constexpr G4double CloverBGOShieldOffset = 25. *mm;
 
 // si array
 constexpr G4double S3SiThickness = 300. *um;

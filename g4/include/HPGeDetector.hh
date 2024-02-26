@@ -63,6 +63,7 @@ private:
   G4Material *mat_al;
   G4Material *mat_fe;
   G4Material *mat_cu;
+  G4Material *mat_pb;
   G4Material *mat_bgo;
 
   G4double hpge_crystal_outer_r; 
@@ -71,11 +72,8 @@ private:
   G4double hpge_crystal_hole_depth;
   G4double hpge_crystal_edeg_offset_1;
   G4double hpge_crystal_edeg_offset_2;
-  G4double capsule_width;
-  G4double capsule_length;
-  G4double cr2capf;
-  G4double bgo2cap; 
-  G4double collimator_width;
+  G4double hpge_cr2capf;
+  G4double hpge_bgo2cap; 
 
   //
   G4LogicalVolume *hpge_crystal_log;
@@ -92,6 +90,5 @@ private:
 
 //
 }
-
 
 #endif

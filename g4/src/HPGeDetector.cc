@@ -14,11 +14,8 @@ HPGeDetector::HPGeDetector(G4LogicalVolume *l)
   hpge_crystal_hole_depth = HPGeCrystalHoleDepth;
   hpge_crystal_edeg_offset_1 = HPGeCrystalEdgeOffset1;
   hpge_crystal_edeg_offset_2 = HPGeCrystalEdgeOffset2;
-  capsule_width = CapsuleWidth;
-  capsule_length = CapsuleLength;
-  cr2capf = CrToCapF;
-  bgo2cap = BGOtoCap;
-  collimator_width = CollimatorWidth;
+  hpge_cr2capf = HPGeCrToCapF;
+  hpge_bgo2cap = HPGeBGOtoCap;
   
   //
   G4NistManager* nist_manager = G4NistManager::Instance();
@@ -28,6 +25,7 @@ HPGeDetector::HPGeDetector(G4LogicalVolume *l)
   mat_ge = nist_manager->FindOrBuildMaterial("G4_Ge");
   mat_cu = nist_manager->FindOrBuildMaterial("G4_Cu");
   mat_fe = nist_manager->FindOrBuildMaterial("G4_Fe");
+  mat_pb = nist_manager->FindOrBuildMaterial("G4_Pb");
 
   G4Element* el_bi  = nist_manager->FindOrBuildElement("Bi");
   G4Element* el_ge  = nist_manager->FindOrBuildElement("Ge");
@@ -95,7 +93,7 @@ void HPGeDetector::BuildDetCapsule()
 //
 void HPGeDetector::BuildBGOCrystal()
 {
-  G4double bgo_crystal_z[3] = {0.*mm, bgo2cap, 193.*mm};
+  G4double bgo_crystal_z[3] = {0.*mm, hpge_bgo2cap, 193.*mm};
   G4double bgo_crystal_r_min[3] = {32.*mm, 51.*mm, 51.*mm};
   G4double bgo_crystal_r_max[3] = {(32.+17.)*mm, (51.+17.)*mm, (51.+37.)*mm};
 
@@ -120,8 +118,17 @@ G4VPhysicalVolume *HPGeDetector::Construct(G4ThreeVector p)
   rot.rotateY(p.getTheta());
   rot.rotateZ(p.getPhi());
 
-  G4Transform3D transform(rot, rot(G4ThreeVector(0.,0.,p.getR())));
-  hpge_crystal_phys = new G4PVPlacement(transform, hpge_crystal_log, "hpge_crystal_log", log, true, id, true);
+  G4Transform3D transform_hpge_crystal(rot, rot(G4ThreeVector(0.,0.,p.getR()+hpge_cr2capf)));
+  hpge_crystal_phys = new G4PVPlacement(transform_hpge_crystal, hpge_crystal_log, "hpge_crystal_log", log, true, id, true);
+
+  G4Transform3D transform_det_capsule(rot, rot(G4ThreeVector(0.,0.,p.getR())));
+  det_capsule_phys = new G4PVPlacement(transform_det_capsule, det_capsule_log, "det_capsule_log", log, true, id, true);
+
+  G4Transform3D transform_det_dewar(rot, rot(G4ThreeVector(0.,0.,p.getR()+455.*mm)));
+  det_dewar_phys = new G4PVPlacement(transform_det_dewar, det_dewar_log, "det_dewar_log", log, true, id, true);
+
+  G4Transform3D transform_bgo_crystal(rot, rot(G4ThreeVector(0.,0.,p.getR()-hpge_bgo2cap)));
+  bgo_crystal_phys = new G4PVPlacement(transform_bgo_crystal, bgo_crystal_log, "bgo_crystal_log", log, true, id, true);
 
   return hpge_crystal_phys;
 }

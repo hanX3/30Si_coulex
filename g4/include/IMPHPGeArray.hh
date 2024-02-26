@@ -3,6 +3,7 @@
 
 #include "HPGeSD.hh"
 #include "HPGeDetector.hh"
+#include "CloverDetector.hh"
 
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
@@ -33,11 +34,14 @@ public:
 private:
   G4LogicalVolume *world_log;
   std::vector<HPGeDetector*> v_hpge;
+  std::vector<CloverDetector*> v_clover;
 
   G4double distance_hpge;
   G4double distance_clover;
   G4double theta_hpge[4];
   G4double phi_hpge[4][4];
+  G4double theta_clover;
+  G4double phi_clover[8];
 
 };
 
