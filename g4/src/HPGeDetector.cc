@@ -1,7 +1,5 @@
 #include "HPGeDetector.hh"
 
-namespace coulex
-{
 //
 HPGeDetector::HPGeDetector(G4LogicalVolume *l)
 {
@@ -118,16 +116,16 @@ G4VPhysicalVolume *HPGeDetector::Construct(G4ThreeVector p)
   rot.rotateY(p.getTheta());
   rot.rotateZ(p.getPhi());
 
-  G4Transform3D transform_hpge_crystal(rot, rot(G4ThreeVector(0.,0.,p.getR()+hpge_cr2capf)));
+  G4Transform3D transform_hpge_crystal(rot, rot*(G4ThreeVector(0.,0.,p.getR()+hpge_cr2capf)));
   hpge_crystal_phys = new G4PVPlacement(transform_hpge_crystal, hpge_crystal_log, "hpge_crystal_log", log, true, id, true);
 
-  G4Transform3D transform_det_capsule(rot, rot(G4ThreeVector(0.,0.,p.getR())));
+  G4Transform3D transform_det_capsule(rot, rot*(G4ThreeVector(0.,0.,p.getR())));
   det_capsule_phys = new G4PVPlacement(transform_det_capsule, det_capsule_log, "det_capsule_log", log, true, id, true);
 
-  G4Transform3D transform_det_dewar(rot, rot(G4ThreeVector(0.,0.,p.getR()+455.*mm)));
+  G4Transform3D transform_det_dewar(rot, rot*(G4ThreeVector(0.,0.,p.getR()+455.*mm)));
   det_dewar_phys = new G4PVPlacement(transform_det_dewar, det_dewar_log, "det_dewar_log", log, true, id, true);
 
-  G4Transform3D transform_bgo_crystal(rot, rot(G4ThreeVector(0.,0.,p.getR()-hpge_bgo2cap)));
+  G4Transform3D transform_bgo_crystal(rot, rot*(G4ThreeVector(0.,0.,p.getR()-hpge_bgo2cap)));
   bgo_crystal_phys = new G4PVPlacement(transform_bgo_crystal, bgo_crystal_log, "bgo_crystal_log", log, true, id, true);
 
   return hpge_crystal_phys;
@@ -141,5 +139,3 @@ void HPGeDetector::Place(G4ThreeVector p)
 
 //
 
-//
-}

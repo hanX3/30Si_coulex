@@ -7,9 +7,7 @@
 
 #include <iomanip>
 
-namespace coulex
-{
-
+//
 G4ThreadLocal G4Allocator<SiHit>* SiHitAllocator = nullptr;
 
 //
@@ -42,5 +40,3 @@ void SiHit::Print()
      << " Position: " << std::setw(7) << G4BestUnit(pos, "Length") << G4endl;
 }
 
-//
-}

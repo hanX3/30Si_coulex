@@ -11,8 +11,6 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 
-namespace coulex
-{
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 PrimaryGeneratorAction::PrimaryGeneratorAction()
@@ -89,6 +87,4 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* an_event)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-}
 

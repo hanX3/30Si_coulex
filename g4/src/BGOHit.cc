@@ -7,8 +7,6 @@
 
 #include <iomanip>
 
-namespace coulex
-{
 
 G4ThreadLocal G4Allocator<BGOHit>* BGOHitAllocator = nullptr;
 
@@ -42,5 +40,3 @@ void BGOHit::Print()
      << " Position: " << std::setw(7) << G4BestUnit(pos, "Length") << G4endl;
 }
 
-//
-}

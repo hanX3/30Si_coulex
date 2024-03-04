@@ -1,9 +1,6 @@
 #include "Target.hh"
 
 //
-namespace coulex
-{
-//
 Target::Target(G4LogicalVolume *wl)
 {
   world_log = wl;
@@ -68,5 +65,3 @@ void Target::Report()
   G4cout << "----> Number of simulation steps in the target is set to " << n_tar_step << G4endl;
 }
 
-//
-}

@@ -1,7 +1,5 @@
 #include "S3SiArray.hh"
 
-namespace coulex
-{
 //
 S3SiArray::S3SiArray(G4LogicalVolume *wl)
 {
@@ -62,5 +60,3 @@ void S3SiArray::MakeSensitive(SiSD *ss)
   }
 }
 
-//
-}

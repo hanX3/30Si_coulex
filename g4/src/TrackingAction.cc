@@ -11,8 +11,6 @@
 #include "G4Track.hh"
 #include "G4Positron.hh"
 
-namespace coulex
-{
 
 //
 TrackingAction::TrackingAction(DetectorConstruction* dc, RootIO* rio)
@@ -43,5 +41,3 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track)
   }
 }
 
-//
-}

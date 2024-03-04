@@ -7,9 +7,6 @@
 #include "SteppingAction.hh"
 #include "RootIO.hh"
 
-namespace coulex
-{
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 ActionInitialization::ActionInitialization(DetectorConstruction* dc, G4int save)
 : G4VUserActionInitialization(),
@@ -51,6 +48,4 @@ void ActionInitialization::Build() const
   }
 }
 
-//
-}
 

@@ -1,8 +1,5 @@
 #include "EventAction.hh"
 
-namespace coulex
-{
-
 //
 EventAction::EventAction(PrimaryGeneratorAction *pg, RootIO *rio)
 : G4UserEventAction(),
@@ -44,6 +41,4 @@ void EventAction::EndOfEventAction(const G4Event* event)
   }
 }
 
-//
-}
 

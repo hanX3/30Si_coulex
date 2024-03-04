@@ -1,7 +1,5 @@
 #include "Chamber.hh"
 
-namespace coulex
-{
 //
 Chamber::Chamber(G4LogicalVolume *l)
 {
@@ -58,5 +56,3 @@ void Chamber::SetPosZ(G4double z)
   G4cout << "----> Chamber Z position set to " << G4BestUnit(chamber_phys->GetTranslation().getZ(),"Length") << G4endl;
 }
 
-//
-}

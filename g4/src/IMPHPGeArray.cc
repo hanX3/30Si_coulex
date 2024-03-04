@@ -1,7 +1,5 @@
 #include "IMPHPGeArray.hh"
 
-namespace coulex
-{
 //
 IMPHPGeArray::IMPHPGeArray(G4LogicalVolume *wl)
 {
@@ -33,9 +31,9 @@ IMPHPGeArray::IMPHPGeArray(G4LogicalVolume *wl)
   phi_hpge[3][3] = 337.5 *deg;
 
   //
-  distance_clover = 20. *cm;
+  distance_clover = 24. *cm;
   
-  theta_clover = 90.;
+  theta_clover = 90.*deg;
   phi_clover[0] = 22.5 *deg;
   phi_clover[1] = 67.5 *deg;
   phi_clover[2] = 112.5 *deg;
@@ -85,10 +83,12 @@ void IMPHPGeArray::Construct()
   }
   std::vector<CloverDetector*>::iterator it_clover = v_clover.begin();
   
-  G4ThreeVector pos_clover;
-  pos_clover.setRThetaPhi(distance_clover, theta_clover, phi_clover[0]);
+  for(int i=0;i<8;i++){
+    (*it_clover)->SetId(i);
+    (*it_clover)->Construct(distance_clover, theta_clover, phi_clover[i]);
+    it_clover++;
+  }
 
-  (*it_clover)->Construct(pos_clover);
 }
 
 //
@@ -103,5 +103,3 @@ void IMPHPGeArray::MakeSensitive(HPGeSD *sd)
 
 }
 
-//
-}

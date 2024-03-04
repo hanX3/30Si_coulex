@@ -1,9 +1,6 @@
 #include "DetectorConstruction.hh"
 
 //
-namespace coulex
-{
-//
 DetectorConstruction::DetectorConstruction()
 {
   world_log = nullptr;
@@ -48,8 +45,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   // chamber
   chamber = new Chamber(world_log);
-  chamber->Construct();
-  chamber->Report();
+  // chamber->Construct();
+  // chamber->Report();
 
   // target
   target = new Target(world_log);
@@ -71,8 +68,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   new G4PVPlacement(nullptr, G4ThreeVector(), si_log, "si_log", world_log, false, 0, check_overlaps);
 
   s3_si_array = new S3SiArray(si_log);
-  s3_si_array->Construct();
-  s3_si_array->Report();
+  // s3_si_array->Construct();
+  // s3_si_array->Report();
 
   // Example of User Limits
   // Below is an example of how to set tracking constraints in a given logical volume
@@ -106,6 +103,3 @@ void DetectorConstruction::SetCheckOverlaps(G4bool co)
   check_overlaps = co;
 }
 
-//
-
-}

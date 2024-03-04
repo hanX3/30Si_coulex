@@ -8,8 +8,6 @@
 #include "G4UnitsTable.hh"
 #include "G4ThreeVector.hh"
 
-namespace coulex
-{
 
 //
 RootIO::RootIO(G4int save)
@@ -251,5 +249,3 @@ void RootIO::CloseStepFile()
   G4cout << "\n----> step tree is saved.\n" << G4endl;
 }
 
-//
-}

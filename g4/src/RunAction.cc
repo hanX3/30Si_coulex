@@ -12,8 +12,6 @@
 #include <fstream>
 #include <string>
 
-namespace coulex
-{
 
 //
 RunAction::RunAction(PrimaryGeneratorAction* pg, RootIO* rio)
@@ -90,5 +88,3 @@ void RunAction::EndOfRunAction(const G4Run* run)
   G4cout << " time:  " << *timer << G4endl;
 }
 
-//
-}

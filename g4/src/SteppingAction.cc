@@ -5,8 +5,6 @@
 #include "G4Step.hh"
 #include "G4SystemOfUnits.hh"
 
-namespace coulex
-{
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 SteppingAction::SteppingAction(DetectorConstruction* dc, RootIO* rio)
@@ -52,5 +50,3 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   }
 }
 
-//
-}

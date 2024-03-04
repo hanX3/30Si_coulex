@@ -1,7 +1,5 @@
 #include "CloverDetector.hh"
 
-namespace coulex
-{
 //
 CloverDetector::CloverDetector(G4LogicalVolume *l)
 {
@@ -106,7 +104,7 @@ void CloverDetector::BuildCloverCrystal()
 
   rot.rotateX(-clover_cr_edge_angle);
   rot.rotateZ(-90.*deg);
-
+  
   clover_crystal_log = new G4LogicalVolume(coax_cut6, mat_ge, "clover_crystal_log", 0, 0, 0);
 
   // color
@@ -140,7 +138,7 @@ void CloverDetector::BuildCuPlate()
   rot.rotateZ(90.*deg);
 
   G4double x = clover_distance_of_crs/2.;
-  G4double y = clover_cr_edge_cut1+clover_cr_edge_cut2-clover_cr_edge_depth*tan(clover_cr_edge_abgle);
+  G4double y = clover_cr_edge_cut1+clover_cr_edge_cut2-clover_cr_edge_depth*tan(clover_cr_edge_angle);
   G4double z = (clover_crystal_length-clover_cr_edge_depth)/2.;
   G4Box *cu_plate_solid1 = new G4Box("cu_plate_solid1", x, y, z);
   G4UnionSolid *cu_plate_solid2 = new G4UnionSolid("cu_plate_solid2", cu_plate_solid1, cu_plate_solid1, &rot, G4ThreeVector());
@@ -161,7 +159,7 @@ void CloverDetector::BuildCapsule()
   G4double capsule_edge_depth = clover_cr_edge_depth + clover_cr2cap_f;
   G4double capsule_edge_width = clover_distance_of_crs/2. + clover_cr_edge_cut1 + clover_cr_edge_cut2 + clover_cr2cap_e;
 
-  G4Tubs *hole = new G4Tubs("hole", 0.*mm, clover_crystal_inner_r+1.*mm, capsule_width1, 0., twopi);
+  G4Tubs *hole = new G4Tubs("hole", 0.*mm, clover_crystal_outer_r+1.*mm, capsule_width1, 0., twopi);
   
   G4double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6;
   tmp0 = 0.*mm;
@@ -215,7 +213,7 @@ void CloverDetector::BuildBGOCrystal()
   G4double bgo_crystal_r_min[4] = {width, width, width, width};
 
   tmp0 = width+clover_bgo_shield_width-clover_bgo_shield_edge_depth*tan(clover_cr_edge_angle); 
-  tmp1 = width+clover_bgo_shield_width-clover_bgo_shield_edge_depth;
+  tmp1 = width+clover_bgo_shield_width;
   tmp2 = tmp1;
   tmp3 = tmp2;
   G4double bgo_crystal_r_max[4] = {tmp0, tmp1, tmp2, tmp3};
@@ -230,23 +228,99 @@ void CloverDetector::BuildBGOCrystal()
 }
 
 //
-G4VPhysicalVolume *CloverDetector::Construct(G4ThreeVector p)
+G4VPhysicalVolume *CloverDetector::Construct(G4double d, G4double t, G4double p)
 {
   BuildCloverCrystal();
+  BuildCuPlate();
+  BuildCapsule();
   BuildCoolRod();
+  BuildBGOCrystal();
 
-  G4RotationMatrix rot;
-  rot.rotateY(p.getTheta());
-  rot.rotateZ(p.getPhi());
+  // clover crystal
+  G4double x = clover_cr_edge_cut1 + clover_distance_of_crs/2.; 
+  G4double y = clover_cr_edge_cut1 + clover_distance_of_crs/2.; 
+  G4double z = d + clover_cr2cap_f;
+  G4cout << "----> x " << x << " y " << y << " z " << z << G4endl;
 
-  G4Transform3D transform_clover_crystal(rot, rot(G4ThreeVector(0.,0.,p.getR())));
-  clover_crystal_phys = new G4PVPlacement(transform_clover_crystal, clover_crystal_log, "clover_crystal_log", log, true, id, true);
+  G4RotationMatrix rot_a;
+  rot_a.rotateZ(-90.*deg);
+  rot_a.rotateY(t);
+  rot_a.rotateZ(p);
+  rot_a.print(G4cout);
+  G4Transform3D transform_clover_crystal_a(rot_a, rot_a*G4ThreeVector(x,y,z));
+  clover_crystal_phys = new G4PVPlacement(transform_clover_crystal_a, clover_crystal_log, "clover_crystal_phys_a", log, false, 4*id, true);
 
-  
+  G4RotationMatrix rot_b;
+  rot_b.rotateZ(-180.*deg);
+  rot_b.rotateY(t);
+  rot_b.rotateZ(p);
+  rot_b.print(G4cout);
+  G4Transform3D transform_clover_crystal_b(rot_b, rot_b*G4ThreeVector(x,y,z));
+  clover_crystal_phys = new G4PVPlacement(transform_clover_crystal_b, clover_crystal_log, "clover_crystal_phys_b", log, false, 4*id+1, true);
+
+  G4RotationMatrix rot_c;
+  rot_c.rotateZ(-270.*deg);
+  rot_c.rotateY(t);
+  rot_c.rotateZ(p);
+  rot_c.print(G4cout);
+  G4Transform3D transform_clover_crystal_c(rot_c, rot_c*G4ThreeVector(x,y,z));
+  clover_crystal_phys = new G4PVPlacement(transform_clover_crystal_c, clover_crystal_log, "clover_crystal_phys_c", log, false, 4*id+2, true);
+
+  G4RotationMatrix rot_d;
+  rot_d.rotateZ(-360.*deg);
+  rot_d.rotateY(t);
+  rot_d.rotateZ(p);
+  rot_d.print(G4cout);
+  G4Transform3D transform_clover_crystal_d(rot_d, rot_d*G4ThreeVector(x,y,z));
+  clover_crystal_phys = new G4PVPlacement(transform_clover_crystal_d, clover_crystal_log, "clover_crystal_phys_d", log, false, 4*id+3, true);
+
+  // cu plate
+  z = d + clover_cr2cap_f +clover_cr_edge_depth + (clover_crystal_length-clover_cr_edge_depth)/2.;
+  G4cout << "----> x " << x << " y " << y << " z " << z << G4endl;
+
+  G4RotationMatrix rot_cu_plate;
+  rot_cu_plate.rotateZ(-360.*deg);
+  rot_cu_plate.rotateY(t);
+  rot_cu_plate.rotateZ(p);
+  rot_cu_plate.print(G4cout);
+  G4Transform3D transform_cu_plate(rot_cu_plate, rot_cu_plate*G4ThreeVector(0.,0.,z));
+  clover_crystal_phys = new G4PVPlacement(transform_cu_plate, cu_plate_log, "cu_plate_phys", log, false, id, true);
+
+  // capsule 
+  z = d;
+  G4RotationMatrix rot_capsule;
+  rot_capsule.rotateZ(45.*deg);
+  rot_capsule.rotateY(t);
+  rot_capsule.rotateZ(p);
+  rot_capsule.print(G4cout);
+  G4Transform3D transform_capsule(rot_capsule, rot_capsule*G4ThreeVector(0.,0.,z));
+  clover_crystal_phys = new G4PVPlacement(transform_capsule, capsule_log, "capsule_phys", log, false, id, true);
+
+  // cool rod
+  z = d + clover_cr2cap_f + clover_crystal_length;
+  G4RotationMatrix rot_cool_rod;
+  rot_cool_rod.rotateZ(45.*deg);
+  rot_cool_rod.rotateY(t);
+  rot_cool_rod.rotateZ(p);
+  rot_cool_rod.print(G4cout);
+  G4Transform3D transform_cool_rod(rot_cool_rod, rot_cool_rod*G4ThreeVector(0.,0.,z));
+  clover_crystal_phys = new G4PVPlacement(transform_cool_rod, cool_rod_log, "cool_rod_phys", log, false, id, true);
+
+  // bgo crystal
+  z = d;
+  G4RotationMatrix rot_bgo_crystal;
+  rot_bgo_crystal.rotateZ(45.*deg);
+  rot_bgo_crystal.rotateY(t);
+  rot_bgo_crystal.rotateZ(p);
+  rot_bgo_crystal.print(G4cout);
+  G4Transform3D transform_bgo_crystal(rot_bgo_crystal, rot_bgo_crystal*G4ThreeVector(0.,0.,z));
+  clover_crystal_phys = new G4PVPlacement(transform_bgo_crystal, bgo_crystal_log, "bgo_crystal_phys", log, false, id, true);
+
+  //
+  // clover_crystal_phys = new G4PVPlacement(G4Transform3D(G4RotationMatrix(),G4ThreeVector(0.,0.,0.)), bgo_crystal_log, "bgo_crystal_phys", log, false, id, true);
+
   return clover_crystal_phys;
 }
 
 
-//
-}
 

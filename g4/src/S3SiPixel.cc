@@ -1,9 +1,6 @@
 #include "S3SiPixel.hh"
 
 //
-namespace coulex
-{
-//
 S3SiPixel::S3SiPixel(G4LogicalVolume *l)
 {
   log = l;
@@ -66,5 +63,3 @@ void S3SiPixel::SetName()
   s3_si_pixel_phys->SetName(name);
 }
 
-//
-}

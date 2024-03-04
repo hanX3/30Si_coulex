@@ -1,10 +1,10 @@
 #include "PhysicsList.hh"
 
 //
-PhysicsList(Projectile *p, Recoil *r, DetectorConstruction *dc)
-projectilr(p),
-recoil(r),
-detector_construction(dc)
+PhysicsList::PhysicsList(Projectile *p, Recoil *r, DetectorConstruction *dc)
+: projectile(p),
+  recoil(r),
+  detector_construction(dc)
 {
   step_size = 0.05 *um;
   custom_stopping = false;
@@ -55,7 +55,7 @@ void PhysicsList::ConstructEM()
   G4cout << "Step size: " << step_size/um << " um" << G4endl;
   
   if(custom_stopping){
-    G4cout << "Will use custom GenericIon stopping power tables from directory: " << cspath << G4endl;
+    G4cout << "Will use custom GenericIon stopping power tables from directory: " << cs_path << G4endl;
   }else{
     G4cout << "Will use default GenericIon stopping power tables." << G4endl;
   }
@@ -84,7 +84,7 @@ void PhysicsList::ConstructEM()
       p_manager->AddProcess(new G4eplusAnnihilation, 0, -1, 4);
     }else if(particle_name == "proton"){
       p_manager->AddProcess(new G4hMultipleScattering, -1, 1, 1);
-      G4hIonisation *proto_ioni = new G4hIonisation(); 
+      G4hIonisation *proton_ioni = new G4hIonisation(); 
       proton_ioni->SetStepFunction(0.05, 0.05 *um); 
       p_manager->AddProcess(proton_ioni, -1, 2, 2);
     }else if(particle_name == "alpha"){
@@ -142,7 +142,7 @@ void PhysicsList::ConstructEM()
       the_model->ListDEDXTables();
       // the_model->PrintDEDXTable(theProjectile,const G4Material *,0.1,10.0,20,false);
       // small step size needed for short lifetimes ?
-      ion_ioni->SetStepFunction(0.05, stepSize);
+      ion_ioni->SetStepFunction(0.05, step_size);
       ion_ioni->SetEmModel(the_model);
       p_manager->AddProcess(ion_ioni, -1, 3, 2);
       p_manager->AddProcess(new G4NuclearStopping(), -1, 4, -1);

@@ -5,8 +5,6 @@
 #include "G4SDManager.hh"
 #include "G4ios.hh"
 
-namespace coulex
-{
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 HPGeSD::HPGeSD(const G4String& name, const G4String& hits_collection_name)
@@ -63,5 +61,4 @@ void HPGeSD::EndOfEvent(G4HCofThisEvent*)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-}
 
