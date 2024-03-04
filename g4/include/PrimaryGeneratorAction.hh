@@ -8,8 +8,6 @@
 class G4ParticleGun;
 class G4Event;
 
-namespace coulex
-{
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -27,7 +25,5 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   private:
     G4ParticleGun* particle_gun = nullptr; // G4 particle gun
 };
-
-}
 
 #endif

@@ -8,8 +8,6 @@
 class G4Run;
 class G4Timer;
 
-namespace coulex
-{
 
 class RootIO;
 class PrimaryGeneratorAction;
@@ -30,7 +28,5 @@ private:
   PrimaryGeneratorAction* pri_gen;    
 };
 
-//
-}
 
 #endif

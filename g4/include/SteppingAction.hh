@@ -8,8 +8,6 @@
 
 class G4LogicalVolume;
 
-namespace coulex
-{
 
 class DetectorConstruction;
 class EventAction;
@@ -30,7 +28,5 @@ private:
   StepData step_data;
 };
 
-//
-}
 
 #endif

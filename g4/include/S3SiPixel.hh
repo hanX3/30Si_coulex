@@ -20,10 +20,7 @@
 #include "G4SubtractionSolid.hh"
 #include "G4RunManager.hh"
 
-namespace coulex
-{
 //
-
 class S3SiPixel
 {
 public:
@@ -65,7 +62,5 @@ private:
   G4int sector_id; // 0-32
 };
 
-//
-}
 
 #endif

@@ -10,8 +10,6 @@
 class G4Step;
 class G4HCofThisEvent;
 
-namespace coulex
-{
 /// BGO sensitive detector class
 ///
 /// The hits are accounted in hits in ProcessHits() function which is called by Geant4 kernel at each step. A hit is created with each step with non zero energy deposit.
@@ -30,7 +28,5 @@ class BGOSD : public G4VSensitiveDetector
   private:
     BGOHitsCollection* hits_collection = nullptr;
 };
-
-}
 
 #endif

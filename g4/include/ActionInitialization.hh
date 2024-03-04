@@ -4,8 +4,6 @@
 #include "globals.hh"
 #include "G4VUserActionInitialization.hh"
 
-namespace coulex
-{
 class DetectorConstruction;
 class RootIO;
 
@@ -24,8 +22,6 @@ private:
   G4int save_flag;  
 };
 
-//
-}
 
 #endif
 

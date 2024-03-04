@@ -9,9 +9,6 @@
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
 
-//
-namespace coulex
-{
 /// Si sensitive detector class
 ///
 /// The hits are accounted in hits in ProcessHits() function which is called by Geant4 kernel at each step. A hit is created with each step with non zero energy deposit.
@@ -31,7 +28,5 @@ private:
   SiHitsCollection *hits_collection = nullptr;
 };
 
-//
-}
 
 #endif

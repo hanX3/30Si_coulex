@@ -7,8 +7,6 @@
 #include "G4ThreeVector.hh"
 #include "tls.hh"
 
-namespace coulex
-{
 /// BGO hit class
 /// It defines data members to store the trackID, energy deposit, and position of charged particles in a selected volume:
 /// - tarck_id, e_dep, pos
@@ -66,7 +64,5 @@ inline void BGOHit::operator delete(void *hit)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-}
 
 #endif

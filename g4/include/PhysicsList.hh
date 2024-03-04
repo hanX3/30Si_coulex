@@ -65,9 +65,9 @@ public:
 
 public:
   int GetReactionType() { return reaction_type; };
-  ReactionCoulex *GetReactionCoulex() { return iaction_coulex; };
+  ReactionCoulex *GetReactionCoulex() { return reaction_coulex; };
 
-  void SetStepSize(double ss) { stepSize = ss; };
+  void SetStepSize(double ss) { step_size = ss; };
   void SetCS() { custom_stopping = true; };
   void SetCSPath(const char *csp) { strcpy(cs_path, csp); };
   void SetUseNeutrons(bool val) { use_neutrons = val; };

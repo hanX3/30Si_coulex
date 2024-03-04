@@ -20,8 +20,6 @@
 
 using namespace CLHEP;
 
-namespace coulex
-{
 //
 class Chamber
 {
@@ -55,7 +53,5 @@ private:
   G4VPhysicalVolume *chamber_phys;
 };
 
-//
-}
 
 #endif

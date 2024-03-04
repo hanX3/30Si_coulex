@@ -11,8 +11,6 @@
 #include "TFile.h"
 #include "TTree.h"
 
-namespace coulex
-{
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 class RootIO
 {
@@ -64,6 +62,5 @@ private:
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-}
 
 #endif

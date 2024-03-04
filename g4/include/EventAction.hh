@@ -20,8 +20,6 @@
 #include "TMath.h"
 #include "TFile.h"
 
-namespace coulex
-{
 
 /// Event action class
 class EventAction : public G4UserEventAction
@@ -40,6 +38,5 @@ private:
   RootIO* root_io;    
 };
 
-}
 
 #endif

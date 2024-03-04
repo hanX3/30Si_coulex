@@ -30,9 +30,6 @@
 #include "G4SystemOfUnits.hh"
 
 //
-namespace coulex
-{
-//
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
@@ -66,7 +63,5 @@ private:
   G4VPhysicalVolume* DefineVolumes();
 
 };
-
-}
 
 #endif

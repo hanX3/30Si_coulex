@@ -17,8 +17,6 @@
 
 using namespace CLHEP;
 
-namespace coulex
-{
 //
 class Target
 {
@@ -67,7 +65,5 @@ private:
   G4double n_tar_step;
 };
 
-//
-}
 
 #endif

@@ -9,8 +9,11 @@
 #include "G4Box.hh"
 #include "G4Sphere.hh"
 #include "G4Trap.hh"
+#include "G4Tubs.hh"
 #include "G4Polycone.hh"
+#include "G4UnionSolid.hh"
 #include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
@@ -25,8 +28,6 @@
 
 using namespace CLHEP;
 
-namespace coulex
-{
 //
 class CloverDetector
 {
@@ -38,7 +39,7 @@ public:
   G4LogicalVolume *log;
 
 public:
-  G4VPhysicalVolume *Construct(G4ThreeVector p);
+  G4VPhysicalVolume *Construct(G4double d, G4double t, G4double p);
   void Place(G4ThreeVector p);
   void Report();
 
@@ -105,7 +106,5 @@ private:
 //
 };
 
-//
-}
 
 #endif

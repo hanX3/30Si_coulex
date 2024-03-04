@@ -25,8 +25,6 @@
 
 using namespace CLHEP;
 
-namespace coulex
-{
 //
 class HPGeDetector
 {
@@ -88,7 +86,5 @@ private:
 //
 };
 
-//
-}
 
 #endif

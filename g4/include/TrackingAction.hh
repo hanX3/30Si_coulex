@@ -6,8 +6,6 @@
 #include "G4UserTrackingAction.hh"
 #include "globals.hh"
 
-namespace coulex
-{
 class DetectorConstruction;
 class EventAction;
 class RootIO;
@@ -27,7 +25,5 @@ private:
   TrackData track_data;
 };
 
-//
-}
 #endif
 

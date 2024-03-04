@@ -8,8 +8,6 @@
 
 #define DATAPATH "./data"  // no "/"
 
-namespace coulex
-{
 // 0b0001 event data
 // 0b0010 track data
 // 0b0100 step data
@@ -51,7 +49,7 @@ constexpr G4double CloverCrEdgeAngle = 22.5 *deg;
 constexpr G4double CloverCapWidth = 2.5 *mm;
 constexpr G4double CloverCapsuleLength = 148. *mm; 
 constexpr G4double CloverCr2CapF = 14. *mm;
-constexpr G4double CloverCr2CapE = 5. *mm;
+constexpr G4double CloverCr2CapE = 15. *mm;
 constexpr G4double CloverFrontShieldL = 123. *mm;
 constexpr G4double CloverFrontShieldWidth = 10. *mm;
 constexpr G4double CloverFrontShield1 = -0.3 *mm;
@@ -73,6 +71,11 @@ constexpr G4double PosAuLayerX = 0. * mm;
 constexpr G4double PosAuLayerY = 0. * mm;
 constexpr G4double PosAuLayerZ = -(TargetThickness+AuLayerThickness) * mm;
 
+// projectile
+constexpr G4int ProjectileA = 30;
+constexpr G4int ProjectileZ = 18;
+constexpr G4int ProjectileKE = 100. *MeV;
+
 //beam
 constexpr G4double PosBeamX = 0. * mm;
 constexpr G4double PosBeamY = 0. * mm;
@@ -80,5 +83,7 @@ constexpr G4double PosBeamZ = -10. * mm;
 constexpr G4double BeamSigma = 1. * MeV;
 //step limit
 
-}
+constexpr G4double Ahc = 1.439964535;
+constexpr G4double Deg2Rad = 0.01745329252;
+
 #endif

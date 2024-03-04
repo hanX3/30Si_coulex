@@ -11,8 +11,6 @@
 #include <vector>
 
 //
-namespace coulex
-{
 
 class S3SiArray
 {
@@ -35,12 +33,6 @@ private:
   G4int rings;
   G4int sectors; 
 };  
-
-//
-}
-
-
-
 
 
 #endif

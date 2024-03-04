@@ -13,8 +13,6 @@
 #include <iostream>
 #include <vector>
 
-namespace coulex
-{
 //
 
 class IMPHPGeArray   
@@ -44,18 +42,5 @@ private:
   G4double phi_clover[8];
 
 };
-
-
-
-
-
-
-
-
-
-
-
-}
-
 
 #endif
