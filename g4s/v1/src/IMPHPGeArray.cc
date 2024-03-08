@@ -100,6 +100,17 @@ void IMPHPGeArray::Report()
 //
 void IMPHPGeArray::MakeSensitive(HPGeSD *sd)
 {
+  G4cout << "-----> Make Sensitive detector" << G4endl;
 
+  std::vector<HPGeDetector*>::iterator it_hpge;
+  std::vector<CloverDetector*>::iterator it_clover;
+
+  for(it_hpge=v_hpge.begin();it_hpge!=v_hpge.end();it_hpge++){
+    (*it_hpge)->GetLog()->SetSensitiveDetector(sd); 
+  }
+
+  for(it_clover=v_clover.begin();it_clover!=v_clover.end();it_clover++){
+    (*it_clover)->GetLog()->SetSensitiveDetector(sd); 
+  }
 }
 

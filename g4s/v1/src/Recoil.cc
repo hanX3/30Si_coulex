@@ -3,8 +3,8 @@
 //
 Recoil::Recoil()
 {
-  recoil_a = 12;
-  recoil_z = 6;
+  recoil_a = 9;
+  recoil_z = 4;
   recoil_ex = 0. *MeV;
   recoil_tau = 0. *ns;
 }
@@ -16,7 +16,7 @@ Recoil::~Recoil()
 }
 
 //
-Recoil::Report()
+void Recoil::Report()
 {
   G4cout << "----> Recoil A set to " << recoil_a << G4endl; 
   G4cout << "----> Recoil Z set to " << recoil_z << G4endl; 

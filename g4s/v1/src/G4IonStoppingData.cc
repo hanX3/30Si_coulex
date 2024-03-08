@@ -51,7 +51,7 @@
 
 #include "G4IonStoppingData.hh" 
 #include "G4PhysicsVector.hh"
-#include "G4LPhysicsFreeVector.hh"
+#include "G4PhysicsFreeVector.hh"
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -66,7 +66,7 @@ using namespace CLHEP;
 
 G4IonStoppingData::G4IonStoppingData(const G4String& leDirectory) :
   subDir( leDirectory ) {
-  G4cout << "Generating stopping powers from files in directory: " << leDirectory << G4endl;
+  //G4cout << "Generating stopping powers from files in directory: " << leDirectory << G4endl;
 }
 
 // #########################################################################
@@ -398,6 +398,8 @@ G4bool G4IonStoppingData::BuildPhysicsVector(
                       
   G4String fileName = G4String( file.str().c_str() );
 
+  //G4cout << "Building physics vector from ion stopping data in file: " << fileName << G4endl;
+
   std::ifstream ifilestream( fileName );
 
   if ( !ifilestream.is_open() ) 
@@ -405,8 +407,9 @@ G4bool G4IonStoppingData::BuildPhysicsVector(
       //G4cout << "Cannot open custom stopping data with filename: " << fileName << G4endl;
       return false;
     }
+  //G4cout << "Opened custom stopping data with filename: " << fileName << G4endl;
     
-  G4LPhysicsFreeVector* physicsVector = new G4LPhysicsFreeVector(); 
+  G4PhysicsFreeVector* physicsVector = new G4PhysicsFreeVector(true); //boolean argument specifies spline 
 
   if( !physicsVector -> Retrieve(ifilestream, true) ) {
      G4cout << "Cannot retrieve physics vector from stopping data file: " << fileName << G4endl;
@@ -414,8 +417,7 @@ G4bool G4IonStoppingData::BuildPhysicsVector(
      return false;
   }
 
-  physicsVector -> ScaleVector( MeV, MeV * cm2 /( 0.001 * g) ); 
-  physicsVector -> SetSpline( true );
+  physicsVector -> ScaleVector( MeV, MeV * cm2 /( 0.001 * g) );
   physicsVector -> FillSecondDerivatives();
 
   // Retrieved vector is added to material store
@@ -453,6 +455,8 @@ G4bool G4IonStoppingData::BuildPhysicsVector(
                       
   G4String fileName = G4String( file.str().c_str() );
 
+  //G4cout << "Building physics vector from ion stopping data in file: " << fileName << G4endl;
+
   std::ifstream ifilestream( fileName );
 
   if ( !ifilestream.is_open() ) 
@@ -460,8 +464,9 @@ G4bool G4IonStoppingData::BuildPhysicsVector(
       //G4cout << "Cannot open custom stopping data with filename: " << fileName << G4endl;
       return false;
     }
+  //G4cout << "Opened custom stopping data with filename: " << fileName << G4endl;
   
-  G4LPhysicsFreeVector* physicsVector = new G4LPhysicsFreeVector(); 
+  G4PhysicsFreeVector* physicsVector = new G4PhysicsFreeVector(true); //boolean argument specifies spline 
 
   if( !physicsVector -> Retrieve(ifilestream, true) ) {
      G4cout << "Cannot retrieve physics vector from stopping data file: " << fileName << G4endl;
@@ -469,8 +474,7 @@ G4bool G4IonStoppingData::BuildPhysicsVector(
      return false;
   }
 
-  physicsVector -> ScaleVector( MeV, MeV * cm2 /( 0.001 * g) ); 
-  physicsVector -> SetSpline( true );
+  physicsVector -> ScaleVector( MeV, MeV * cm2 /( 0.001 * g) );
   physicsVector -> FillSecondDerivatives();
 
   // Retrieved vector is added to material store
@@ -568,6 +572,13 @@ void G4IonStoppingData::DumpMap() {
       }
   }
 
+}
+
+G4bool G4IonStoppingData::CheckEmpty(){
+  if((dedxMapMaterials.size() + dedxMapElements.size()) <= 0){
+    return true;
+  }
+  return false;
 }
 
 // #########################################################################

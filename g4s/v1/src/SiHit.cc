@@ -1,14 +1,14 @@
 #include "SiHit.hh"
-#include "G4UnitsTable.hh"
-#include "G4VVisManager.hh"
-#include "G4Circle.hh"
-#include "G4Colour.hh"
-#include "G4VisAttributes.hh"
-
-#include <iomanip>
 
 //
 G4ThreadLocal G4Allocator<SiHit>* SiHitAllocator = nullptr;
+
+//
+SiHit::SiHit(G4int rid, G4int sid)
+: ring_id(rid), sector_id(sid)
+{
+
+}
 
 //
 G4bool SiHit::operator==(const SiHit& right) const
@@ -36,7 +36,7 @@ void SiHit::Draw()
 void SiHit::Print()
 {
   G4cout
-     << "  track id: " << track_id << "energy dep: " << std::setw(7) << G4BestUnit(e_dep, "Energy")
+     << " ring id: " << ring_id << " sector_id " << sector_id << " energy dep: " << std::setw(7) << G4BestUnit(e_dep, "Energy")
      << " Position: " << std::setw(7) << G4BestUnit(pos, "Length") << G4endl;
 }
 

@@ -5,47 +5,70 @@
 #include "G4SDManager.hh"
 #include "G4ios.hh"
 
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 SiSD::SiSD(const G4String& name, const G4String& hits_collection_name)
  : G4VSensitiveDetector(name)
 {
-  // collectionName var inherit from G4VSensitiveDetector, do not change
-  // collectionName must be set
   collectionName.insert(hits_collection_name);
+
+  hits_collection = nullptr;
+  hc_id = -1;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void SiSD::Initialize(G4HCofThisEvent* hce)
+//
+void SiSD::Initialize(G4HCofThisEvent *hce)
 {
   // Create hits collection
   hits_collection = new SiHitsCollection(SensitiveDetectorName, collectionName[0]);
 
   // Add this collection in hce
-  G4int hc_id = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+  if(hc_id<0){
+    hc_id = G4SDManager::GetSDMpointer()->GetCollectionID(hits_collection);
+  }
+  G4cout << "-----> in SiSD Initialize() function hc_id " << hc_id << G4endl;
   hce->AddHitsCollection(hc_id, hits_collection);
 
-  hits_collection->insert(new SiHit());
+  for(int i=0;i<RingNumber;i++){
+    for(int j=0;j<SectorNumber;j++){
+      hits_collection->insert(new SiHit());
+    }
+  } 
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 G4bool SiSD::ProcessHits(G4Step* step, G4TouchableHistory* history)
 {
   // energy deposit
   G4double e = step->GetTotalEnergyDeposit();
   if(e==0.) return false;
 
-  SiHit *hit = (*hits_collection)[0];
-  hit->SetTrackID(step->GetTrack()->GetTrackID());
-  hit->AddEdep(e);
-  hit->SetPos(step->GetPostStepPoint()->GetPosition());
+  auto touchable = step->GetPreStepPoint()->GetTouchable();
+  auto physical = touchable->GetVolume();
+  auto copy_no = physical->GetCopyNo();
+  G4cout << "-----> in SiSD ProcessHits function copy_no " << copy_no << G4endl;
 
-  // hit->Print();
+  G4int ring_id = copy_no/RingNumber;
+  G4int sector_id = copy_no%SectorNumber;
+  G4cout << "-----> in SiSD ProcessHits function ring_id " << ring_id << G4endl;
+  G4cout << "-----> in SiSD ProcessHits function sector_id " << sector_id << G4endl;
+  
+  // check if the first touch
+  auto hit = (*hits_collection)[copy_no];
+  if(hit->GetRingId()<0 || hit->GetSectorId()<0){
+    hit->SetRingId(ring_id);
+    hit->SetSectorId(sector_id);
+    
+    auto pre_step_point = step->GetPreStepPoint();
+    auto world_pos = pre_step_point->GetPosition();
+    auto pos = touchable->GetHistory()->GetTopTransform().TransformPoint(world_pos);
+    hit->SetPos(pos);
+  }
+  hit->AddEdep(e);
 
   return true;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void SiSD::EndOfEvent(G4HCofThisEvent*)
 {
   if(verboseLevel>1){
@@ -58,6 +81,4 @@ void SiSD::EndOfEvent(G4HCofThisEvent*)
      }
   }
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

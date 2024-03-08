@@ -14,10 +14,11 @@
 
 
 //
-RunAction::RunAction(PrimaryGeneratorAction* pg, RootIO* rio)
+RunAction::RunAction(PhysicsList *pl, RootIO *ri, DetectorConstruction *dc)
 : G4UserRunAction(),
-  pri_gen(pg),
-  root_io(rio)
+  physics_list(pl),
+  root_io(ri),
+  detector_construction(dc)
 {
   // set printing event number per each 100000 events
   G4RunManager::GetRunManager()->SetPrintProgress(100000);
@@ -25,18 +26,22 @@ RunAction::RunAction(PrimaryGeneratorAction* pg, RootIO* rio)
   timer = new G4Timer();
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 RunAction::~RunAction()
 {
   delete timer;
   timer = NULL;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void RunAction::BeginOfRunAction(const G4Run* run)
 {
+  G4cout << "---> Beginning the run !" << G4endl;
+
   //inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+
+  physics_list->GetReactionCoulex()->TargetFaceCrossSection();
 
   if((MASK&0b001)==0b001){
     root_io->OpenEventFile();
@@ -71,6 +76,33 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
 void RunAction::EndOfRunAction(const G4Run* run)
 {
+  G4double p, ddx, dx, nv;
+  G4cout << G4endl;
+  G4cout << std::setprecision(3);
+
+  G4cout << " Thin target cross section is calculated assuming all reactions with the energy of the particle gun " << G4endl;
+  G4cout << " Thick target correction accounts for the projectile energy change while crossing the backing and the target" << G4endl;
+  G4cout << " Thin Target Cross Section is : " << physics_list->GetReactionCoulex()->GetTargetFaceCrossSection() << " [b]" << G4endl;
+  G4cout << " Thick Target correction is : " << physics_list->GetReactionCoulex()->GetThickTargetCorrection() << G4endl;
+  G4cout << " Thick Target Cross Section is : "<< physics_list->GetReactionCoulex()->GetThickTargetCrossSection() << " [b]" << G4endl;
+
+  dx = detector_construction->GetTarget()->GetTargetThickness(); // in cm
+  ddx = dx*detector_construction->GetTarget()->GetTargetDensity(); // in g/cm^2
+  nv = detector_construction->GetTarget()->GetTargetNV(physics_list->GetReactionCoulex()->getTargetRecoilZ());   // in atoms/cm3
+  p = nv*dx*physics_list->GetReactionCoulex()->GetThickTargetCrossSection()*1E-18;
+
+  G4cout << " Target material density in g/cm3 is : " << detector_construction->GetTarget()->GetTargetDensity() <<G4endl;
+  G4cout <<" Target thickness in mg/cm2 is : " << ddx*1000. << G4endl;
+  // G4cout << " Number of atoms per unit volume : " << nv << " atoms/cm3" << G4endl;
+  // G4cout << " Avogadro's number : " << Avogadro << " atoms/mol" << G4endl;
+  G4cout << " Number density of recoils in the target is: " << nv/Avogadro*1000. << " [milli-mole/cm3]" << G4endl;
+  G4cout << " Number of excitation is : " << p << " per million beam particles" << G4endl;
+  G4cout << " Results are based on simulation of : " << physics_list->GetReactionCoulex()->GetNumberOfSimulatedReactions() << " reactions" << G4endl;
+  G4cout << " Dropped : " << physics_list->GetReactionCoulex()->GetRxnDroppedE() << " reactions due to energy cutoff" << G4endl;
+  G4cout << " Dropped : " << physics_list->GetReactionCoulex()->GetRxnDroppedKsi() << " reactions due to adiabaticity xi out of range" << G4endl;
+  G4cout <<" Dropped : " << physics_list->GetReactionCoulex()->GetRxnDroppedRand() << " reactions due to XC RNG" << G4endl;
+
+  //
   if((MASK&0b001)==0b001){
     root_io->CloseEventFile();
   }

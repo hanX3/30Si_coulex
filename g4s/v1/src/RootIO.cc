@@ -72,6 +72,8 @@ void RootIO::OpenEventFile()
     //  creat tree
     event_tree = new TTree("tr", "event simulation data");
 
+		event_tree->Branch("event_id", &event_data.event_id, "event_id/I");
+		event_tree->Branch("detector_id", &event_data.detector_id, "detector_id/I");
 		event_tree->Branch("e", &event_data.e, "e/D");
 		event_tree->Branch("x", &event_data.x, "x/D");
 		event_tree->Branch("y", &event_data.y, "y/D");

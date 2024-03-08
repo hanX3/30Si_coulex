@@ -10,9 +10,10 @@
 HPGeSD::HPGeSD(const G4String& name, const G4String& hits_collection_name)
  : G4VSensitiveDetector(name)
 {
-  // collectionName var inherit from G4VSensitiveDetector, do not change
-  // collectionName must be set
   collectionName.insert(hits_collection_name);
+
+  hits_collection = nullptr;
+  hc_id = -1;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -22,23 +23,49 @@ void HPGeSD::Initialize(G4HCofThisEvent* hce)
   hits_collection = new HPGeHitsCollection(SensitiveDetectorName, collectionName[0]);
 
   // Add this collection in hce
-  G4int hc_id = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+  if(hc_id<0){
+    hc_id = G4SDManager::GetSDMpointer()->GetCollectionID(hits_collection);
+  }
+  G4cout << "----> in HPGeSD Initialize function hc_id " << hc_id << G4endl;
   hce->AddHitsCollection(hc_id, hits_collection);
-
-  hits_collection->insert(new HPGeHit());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4bool HPGeSD::ProcessHits(G4Step* step, G4TouchableHistory* history)
 {
-  // energy deposit
-  G4double e = step->GetTotalEnergyDeposit();
-  if(e==0.) return false;
+  auto e = step->GetTotalEnergyDeposit();
+  if (e==0.) return true;
 
-  HPGeHit *hit = (*hits_collection)[0];
-  hit->SetTrackID(step->GetTrack()->GetTrackID());
-  hit->AddEdep(e);
-  hit->SetPos(step->GetPostStepPoint()->GetPosition());
+  auto touchable = step->GetPreStepPoint()->GetTouchable();
+  auto physical = touchable->GetVolume();
+  auto copy_no = physical->GetCopyNo();
+  G4cout << "-----> in HPGeSD ProcessHits function copy_no " << copy_no << G4endl;
+
+  // check if this detector already has a hit
+  auto ix = -1;
+  for(auto i=0;i<hits_collection->entries();++i){
+    if((*hits_collection)[i]->GetID()==copy_no){
+      ix = i;
+      break;
+    }
+  }
+ 
+  if(ix>=0){
+    // if it has
+    (*hits_collection)[ix]->AddEdep(e);
+  }else{
+    // if not, create a new hit and set it to the collection
+    auto hit = new HPGeHit();
+    hit->SetID(copy_no);
+    hit->AddEdep(e);
+   
+    auto pre_step_point = step->GetPreStepPoint();
+    auto world_pos = pre_step_point->GetPosition();
+    auto pos = touchable->GetHistory()->GetTopTransform().TransformPoint(world_pos);
+    hit->SetPos(pos);
+ 
+    hits_collection->insert(hit);
+  }
 
   // hit->Print();
 

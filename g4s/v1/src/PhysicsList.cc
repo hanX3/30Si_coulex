@@ -139,23 +139,18 @@ void PhysicsList::ConstructEM()
         isd->DumpMap();
       }
 
-      the_model->ListDEDXTables();
+      // the_model->ListDEDXTables();
       // the_model->PrintDEDXTable(theProjectile,const G4Material *,0.1,10.0,20,false);
       // small step size needed for short lifetimes ?
       ion_ioni->SetStepFunction(0.05, step_size);
       ion_ioni->SetEmModel(the_model);
       p_manager->AddProcess(ion_ioni, -1, 3, 2);
       p_manager->AddProcess(new G4NuclearStopping(), -1, 4, -1);
-      switch(reaction_type){
-        case 0:
-          // coulex
-          reaction_coulex = new ReactionCoulex(projectile, recoil);
-          p_manager->AddProcess(reaction_coulex, -1, -1, 3);
-          break;
-        default:
-          G4cout << "ERROR: no reaction mechanism specified." << G4endl;
-          exit(-1);
-      }
+      
+      // coulex
+      reaction_coulex = new ReactionCoulex(projectile, recoil);
+      p_manager->AddProcess(reaction_coulex, -1, -1, 3);
+
       p_manager->AddProcess(new G4StepLimiter, -1, -1, 4);
     }else if(particle_name == "neutron"){
       if (use_neutrons) {
@@ -211,3 +206,19 @@ void PhysicsList::ConstructEM()
   }
 }
 
+//
+void PhysicsList::SetCuts() {
+  // suppress error messages even in case e/gamma/proton do not exist
+  //  G4int temp = GetVerboseLevel();
+
+  // G4double len=1*mm;
+  // SetVerboseLevel(0);
+  //  "G4VUserPhysicsList::SetCutsWithDefault" method sets
+  //   the default cut value for all particle types
+
+  // SetDefaultCutValue(len);
+  SetCutsWithDefault();
+  // Retrieve verbose level
+  // SetVerboseLevel(temp);
+  // getc(stdin);
+}

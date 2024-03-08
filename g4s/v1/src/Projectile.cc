@@ -14,7 +14,7 @@ Projectile::Projectile()
   fc_dx = 0. *mm;
   fc_y = 0. *mm;
   fc_dy = 0. *mm;
-  fc_z = 0. *mm;
+  fc_z = -100. *cm;
 
   max_ata = 0. *mrad;
   max_bta = 0. *mrad;

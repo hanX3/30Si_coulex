@@ -5,8 +5,8 @@ S3SiArray::S3SiArray(G4LogicalVolume *wl)
 {
   world_log = wl;
 
-  rings = 24;
-  sectors = 32;
+  rings = RingNumber;
+  sectors = SectorNumber;
 }
 
 //

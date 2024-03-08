@@ -2,7 +2,7 @@
 
 //  
 ReactionCoulex::ReactionCoulex(Projectile *p, Recoil *r, const G4String &process_name)
-: G4VProcess(process_name), theRecoil(r),theProjectile(p)
+: G4VProcess(process_name), recoil(r), projectile(p)
 {
   reaction_here = false;
 
@@ -407,25 +407,25 @@ ReactionCoulex::ReactionCoulex(Projectile *p, Recoil *r, const G4String &process
   v_th180.push_back(6.760E-06);
   v_th180.push_back(0.737E-10);
 
-  v_fthksi.push_back(v_th000);
-  v_fthksi.push_back(v_th010);
-  v_fthksi.push_back(v_th020);
-  v_fthksi.push_back(v_th030);
-  v_fthksi.push_back(v_th040);
-  v_fthksi.push_back(v_th050);
-  v_fthksi.push_back(v_th060);
-  v_fthksi.push_back(v_th070);
-  v_fthksi.push_back(v_th080);
-  v_fthksi.push_back(v_th090);
-  v_fthksi.push_back(v_th100);
-  v_fthksi.push_back(v_th110);
-  v_fthksi.push_back(v_th120);
-  v_fthksi.push_back(v_th130);
-  v_fthksi.push_back(v_th140);
-  v_fthksi.push_back(v_th150);
-  v_fthksi.push_back(v_th160);
-  v_fthksi.push_back(v_th170);
-  v_fthksi.push_back(v_th180);
+  v_v_fthksi.push_back(v_th000);
+  v_v_fthksi.push_back(v_th010);
+  v_v_fthksi.push_back(v_th020);
+  v_v_fthksi.push_back(v_th030);
+  v_v_fthksi.push_back(v_th040);
+  v_v_fthksi.push_back(v_th050);
+  v_v_fthksi.push_back(v_th060);
+  v_v_fthksi.push_back(v_th070);
+  v_v_fthksi.push_back(v_th080);
+  v_v_fthksi.push_back(v_th090);
+  v_v_fthksi.push_back(v_th100);
+  v_v_fthksi.push_back(v_th110);
+  v_v_fthksi.push_back(v_th120);
+  v_v_fthksi.push_back(v_th130);
+  v_v_fthksi.push_back(v_th140);
+  v_v_fthksi.push_back(v_th150);
+  v_v_fthksi.push_back(v_th160);
+  v_v_fthksi.push_back(v_th170);
+  v_v_fthksi.push_back(v_th180);
 }
 
 //
@@ -435,7 +435,7 @@ ReactionCoulex::~ReactionCoulex()
 }
 
 //
-G4VParticleChange *PostStepDoIt(const G4Track &track, const G4Step &step)
+G4VParticleChange *ReactionCoulex::PostStepDoIt(const G4Track &track, const G4Step &step)
 {
   aParticleChange.Initialize(track);
   
@@ -539,12 +539,12 @@ G4bool ReactionCoulex::SetupReactionProducts(const G4Track &track, G4DynamicPart
   // for good ksi and f(ksi) calculate ratio of XC at reaction energy
   // to ratio on face and use RNG to determine if reaction goes
   ke_in = track.GetDynamicParticle()->GetKineticEnergy(); // energy of the incident particle
-  if(ke_in > dep){
+  if(ke_in > de_prime){
     e_prime = ke_in-de*(projectile_a+recoil_a)/recoil_a; // internal energy of the center of mass 1/2*mu*Vrel^2
     ksi = GetKsi(ke_in);
     f_ksi = GetFKsi(ksi);
     if(f_ksi > 0.){
-      sigma_ratio = e_prime*fksi/(e_prime_face*the_f);
+      sigma_ratio = e_prime*f_ksi/(e_prime_face*the_f);
       rand = G4UniformRand();
       if(rand < sigma_ratio){
 	      // printf(" ke_in: %10.4f\n  xi: %10.4f\n f(xi): %10.4e\n", ke_in, ksi, f_ksi);
@@ -576,8 +576,8 @@ G4bool ReactionCoulex::SetupReactionProducts(const G4Track &track, G4DynamicPart
   v_thlookup.clear();
 
   // setup lookup table for angular distribution of rxn products
-  CalcFthKsi(ksi, &v_thefth); 
-  SetupLookupGenerator(fksi); 
+  CalcFThKsi(ksi, &v_thefth); 
+  SetupLookupGenerator(f_ksi); 
 
   // vector<G4double>::iterator it;
   // G4cout << "For ksi at reaction depth: " << ksi << G4endl;
@@ -627,7 +627,7 @@ G4bool ReactionCoulex::SetupReactionProducts(const G4Track &track, G4DynamicPart
   // printf("dc %.4f\n", dc);
   // getc(stdin);
   
-  if(dc > dcmin){      
+  if(dc > dc_min){
     sint = std::sin(theta*deg);
     cost = std::cos(theta*deg);
     phi = CLHEP::twopi*G4UniformRand();
@@ -636,7 +636,7 @@ G4bool ReactionCoulex::SetupReactionProducts(const G4Track &track, G4DynamicPart
       
     // this is momentum in the lab assuming the z axis as the beam axis
     r = recoil_a/(projectile_a+recoil_a)*p_in.mag()/tbar;
-    p_perpi = r*sint;
+    p_perp = r*sint;
     p_par1 = r*(cost+t);
     p_par2 = r*(tbar-cost);
       
@@ -745,23 +745,26 @@ void ReactionCoulex::TargetFaceCrossSection()
     de = recoil_ex;
   }
 
+  G4cout << "----> test" << G4endl; 
   ke = projectile->GetKE(); // this is the kinetic energy of the projectile in the lab used to get the vi two lines down
   de_prime = (1.+projectile_a/recoil_a)*de;  // Eq. II C.4 and explanation below (CM internal energy 1/2*mu*Vrel^2)
   e_prime_face = ke-de_prime;
   ksi_face = GetKsi(ke);
   c = 4.819*projectile_a/recoil_z/recoil_z/(1.+projectile_a/recoil_a)/(1.+projectile_a/recoil_a); // Eq. II C.17 the case of E2 with Z1 instead of Z2, see Sec. II A.6
   ce = c*e_prime_face*be2; // Part of Eq. II C.15
-  the_f = GetFKsi(ksi_ace); // from lookup table
+  the_f = GetFKsi(ksi_face); // from lookup table
   
+  G4cout << "----> test" << G4endl; 
   // clear vectors needed
   v_thefth.clear();
   v_thbin.clear();
   v_fbin.clear();
   v_thlookup.clear();
 
-  Calcfthksi(ksi_face, &v_thefth); 
+  CalcFThKsi(ksi_face, &v_thefth); 
   SetupLookupGenerator(the_f); 
 
+  G4cout << "----> test" << G4endl; 
   // vector<G4double>::iterator it;
   // G4cout << "For ksi at reaction depth: " << ksi << G4endl;
   // G4cout << "Printing thefth" << G4endl;
@@ -794,7 +797,7 @@ void ReactionCoulex::TargetFaceCrossSection()
   // getc(stdin);
 
   sigma_face = ce*the_f; // Full Eq. II C.15, cross section on the target face in barns
-  printf("target face xi :%10.4f\n", ksi_ace);
+  printf("target face xi :%10.4f\n", ksi_face);
   printf("target face f(xi) :%10.4f\n", the_f);
   printf("target face cross section :%10.4f b\n", sigma_face);
 
@@ -819,6 +822,7 @@ void ReactionCoulex::TargetFaceCrossSection()
       projectile_decay_table = new G4DecayTable();
       particle_projectile->SetDecayTable(projectile_decay_table);
     }
+    G4cout << "----> test2" << G4endl; 
     GammaDecayChannel *projectile_decay = new GammaDecayChannel(-1, particle_projectile, 1, projectile_ex, projectile_ex, 0); // single step
     projectile_decay_table->Insert(projectile_decay);
     // projectile_decay_table->DumpInfo();
@@ -852,7 +856,7 @@ void ReactionCoulex::TargetFaceCrossSection()
     // getc(stdin);
 
     // make sure that the recoil has the decay process in its manager
-    if(rec->GetProcessManager() == nullptr){
+    if(particle_recoil->GetProcessManager() == nullptr){
       G4cerr << "Could not find process manager for the recoil." << G4endl;
       exit(EXIT_FAILURE);
     }
@@ -874,8 +878,8 @@ void ReactionCoulex::TargetFaceCrossSection()
 
   // some legacy stuff?
   // not sure what the purpose is
-  vector <G4double> *v_f = projectile->GetF();
-  vector <G4double> *v_th = projectile->GetTh();
+  std::vector <G4double> *v_f = projectile->GetF();
+  std::vector <G4double> *v_th = projectile->GetTh();
   for(int i=0;i<v_theta_array.size();i++){
     (*v_th)[i] = v_theta_array[i];
     (*v_f)[i] = DfofTheta(v_theta_array[i], &v_thefth);
@@ -896,7 +900,7 @@ void ReactionCoulex::TargetFaceCrossSection()
 void ReactionCoulex::SetupLookupGenerator(G4double fksi)
 {
   G4double f, slope;
-  vector<G4int> v_limits;
+  std::vector<G4int> v_limits;
 
   for(int i=1;i<(int)v_theta_array.size();i++){
     v_thbin.push_back(0.5*(v_theta_array[i-1]+v_theta_array[i]));
@@ -904,7 +908,7 @@ void ReactionCoulex::SetupLookupGenerator(G4double fksi)
     f -= v_thefth[i]*std::cos(v_theta_array[i]*Deg2Rad);
     slope = v_thefth[i]-v_thefth[i-1];
     slope /= (v_theta_array[i]-v_theta_array[i-1]);
-    slope / =Deg2Rad;
+    slope /= Deg2Rad;
     f += slope*(std::sin(v_theta_array[i]*Deg2Rad)-std::sin(v_theta_array[i-1]*Deg2Rad));
     f *= CLHEP::twopi;
     v_fbin.push_back(f);
@@ -912,7 +916,7 @@ void ReactionCoulex::SetupLookupGenerator(G4double fksi)
 
   v_limits.push_back(0);
   f = 0.;
-  for(i=0;i<(int)v_thbin.size();i++){
+  for(int i=0;i<(int)v_thbin.size();i++){
     f += v_fbin[i];
     v_limits.push_back(G4int(10000.*f/fksi));
   }
@@ -928,7 +932,7 @@ void ReactionCoulex::SetupLookupGenerator(G4double fksi)
 G4double ReactionCoulex::GetKsi(G4double ke)
 {
   G4double zeta, sqz, eti, etf, ksi;
-  zeta = dep/ke; // Eq. II C.5 dimensionless
+  zeta = de_prime/ke; // Eq. II C.5 dimensionless
   sqz = std::sqrt(1.-zeta);
   eti = 0.5*projectile_z*recoil_z*sqrt(projectile_a/10.008/ke); // Eq. II C.8
   etf = eti/sqz; // Eq. II C.9
@@ -958,7 +962,7 @@ G4double ReactionCoulex::GetTheta()
   if(std::fabs(y1) < x_eps) return th1;
 
   x2 = th2;
-  y2 = FineThetaFunction(x2,th1,th2,f1,f2,F,r);
+  y2 = FineThetaFunction(x2, th1, th2, f1, f2, f, r);
   if(std::fabs(y2) < x_eps) return th2;
 
   th = v_thbin[bin];
@@ -990,8 +994,8 @@ G4double ReactionCoulex::FineThetaFunction(G4double th, G4double th1, G4double t
 //
 G4double ReactionCoulex::DfdOmega(G4double ksi, G4double theta)
 {
-  vector<G4double> *v_fth = new vector<G4double>;
-  if(CalcFthKsi(ksi, v_fth)){ // 0 if ksi out of range
+  std::vector<G4double> *v_fth = new std::vector<G4double>;
+  if(CalcFThKsi(ksi, v_fth)){ // 0 if ksi out of range
     G4double df_t = DfofTheta(theta, v_fth);
     delete v_fth; // free the memory
     return df_t;
@@ -1002,8 +1006,9 @@ G4double ReactionCoulex::DfdOmega(G4double ksi, G4double theta)
 }
 
 //
-G4double ReactionCoulex::DfofTheta(G4double theta, vector<G4double> *v_fth)
+G4double ReactionCoulex::DfofTheta(G4double theta, std::vector<G4double> *v_fth)
 {
+  G4int i;
   G4double x1, y1, x2, y2, x, y;
 
   // G4cout << "Printing thefth" << G4endl;
@@ -1013,7 +1018,7 @@ G4double ReactionCoulex::DfofTheta(G4double theta, vector<G4double> *v_fth)
   // }
   // getc(stdin);
 
-  for(int i=1;i<(int)v_theta_array.size();i++){
+  for(i=1;i<(int)v_theta_array.size();i++){
     if((theta>=v_theta_array[i-1]) && (theta<v_theta_array[i])){
       break;
     }
@@ -1028,7 +1033,7 @@ G4double ReactionCoulex::DfofTheta(G4double theta, vector<G4double> *v_fth)
 }
 
 //
-G4int ReactionCoulex::CalcFthKsi(G4double ksi, vector<G4double> *v_fth)
+G4int ReactionCoulex::CalcFThKsi(G4double ksi, std::vector<G4double> *v_fth)
 {
   G4int shift;
   G4double x1, x2, y1, y2, y, dx;
@@ -1038,7 +1043,7 @@ G4int ReactionCoulex::CalcFthKsi(G4double ksi, vector<G4double> *v_fth)
 
   shift = 0;
   std::vector<G4double>::iterator it_ksi;
-  for(it_ksi=v_ksi_array;it_ksi!=(v_ksi_array.end()-1);it_ksi++){
+  for(it_ksi=v_ksi_array.begin();it_ksi!=(v_ksi_array.end()-1);it_ksi++){
     if((ksi>=(*it_ksi)) && (ksi<=(*(it_ksi+1)))){
 	    break;
     }
@@ -1050,7 +1055,7 @@ G4int ReactionCoulex::CalcFthKsi(G4double ksi, vector<G4double> *v_fth)
 
   std::vector<G4double>::iterator it;
   std::vector<std::vector<G4double>>::iterator it_fthksi;
-  for(it_fthksi=v_fthksi.begin();it_fthksi<v_fthksi.end();it_fthksi++){
+  for(it_fthksi=v_v_fthksi.begin();it_fthksi!=v_v_fthksi.end();it_fthksi++){
     it = (*it_fthksi).begin();
     y1 = *(it+shift);
     y2 = *(it+shift+1);

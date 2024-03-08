@@ -11,10 +11,18 @@
 G4ThreadLocal G4Allocator<HPGeHit>* HPGeHitAllocator = nullptr;
 
 //
+HPGeHit::HPGeHit(G4int i)
+: detector_id(i)
+{
+
+}
+
+//
 G4bool HPGeHit::operator==(const HPGeHit& right) const
 {
   return (this == &right)?true:false;
 }
+
 
 //
 void HPGeHit::Draw()
@@ -36,7 +44,7 @@ void HPGeHit::Draw()
 void HPGeHit::Print()
 {
   G4cout
-     << "  track id: " << track_id << "energy dep: " << std::setw(7) << G4BestUnit(e_dep, "Energy")
+     << "  detector_id: " << detector_id << "energy dep: " << std::setw(7) << G4BestUnit(e_dep, "Energy")
      << " Position: " << std::setw(7) << G4BestUnit(pos, "Length") << G4endl;
 }
 

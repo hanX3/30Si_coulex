@@ -89,7 +89,7 @@ void GammaDecayChannel::FillDaughterNucleus (G4int index, G4int A, G4int Z,
   G4double theDaughterExcitation)
 {
   //J. Williams: get rid of rounding errors resulting in negative numbers
-  if((theDaughterExcitation<0.0)&&(theDaughterExcitation>-0.00001))
+  if((theDaughterExcitation<0.0)&&(theDaughterExcitation>-0.0001))
     theDaughterExcitation=0.0;
   //
   //

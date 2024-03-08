@@ -35,7 +35,7 @@ G4VPhysicalVolume *Target::Construct()
   target_phys = new G4PVPlacement(G4Transform3D(*no_rot, *pos), target_log, "target_log", world_log, false, 0, true);
   shift.setX(0.);
   shift.setY(0.);
-  shift.setZ(-0.5*target_thickness);
+  shift.setZ(-target_thickness/2.);
   target_phys->SetTranslation(shift);
 
   // limits
@@ -65,3 +65,17 @@ void Target::Report()
   G4cout << "----> Number of simulation steps in the target is set to " << n_tar_step << G4endl;
 }
 
+//
+void Target::SetTargetReactionDepth(G4double d)
+{
+  //  G4cout<<"\n----> The depth is "<<G4BestUnit(d, "Length")<< G4endl;;
+  target_limits->SetUserMinRange(d);
+}
+
+//
+G4double Target::GetTargetNV(G4int z)
+{
+  // todo
+  //
+  return 0.;
+}
