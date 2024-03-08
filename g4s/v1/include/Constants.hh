@@ -60,6 +60,8 @@ constexpr G4double CloverBGOShield2Cap = 3.7 *mm;
 constexpr G4double CloverBGOShieldOffset = 25. *mm;
 
 // si array
+constexpr G4int RingNumber = 24;
+constexpr G4int SectorNumber = 32;
 constexpr G4double S3SiThickness = 300. *um;
 constexpr G4double S3SiOuterRadius = 35 *mm;
 constexpr G4double S3Si2Target = 8.6 *mm;
