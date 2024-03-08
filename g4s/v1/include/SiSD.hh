@@ -1,18 +1,16 @@
 #ifndef SiSD_h
 #define SiSD_h 1
 
+#include "Constants.hh"
 #include "SiHit.hh"
-
-#include <vector>
 
 #include "G4VSensitiveDetector.hh"
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
 
-/// Si sensitive detector class
-///
-/// The hits are accounted in hits in ProcessHits() function which is called by Geant4 kernel at each step. A hit is created with each step with non zero energy deposit.
+#include <vector>
 
+//
 class SiSD : public G4VSensitiveDetector
 {
 public:
@@ -25,7 +23,8 @@ public:
   void EndOfEvent(G4HCofThisEvent *) override;
 
 private:
-  SiHitsCollection *hits_collection = nullptr;
+  SiHitsCollection *hits_collection;
+  G4int hc_id;
 };
 
 

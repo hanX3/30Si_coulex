@@ -5,16 +5,22 @@
 #include "G4THitsCollection.hh"
 #include "G4Allocator.hh"
 #include "G4ThreeVector.hh"
+#include "G4UnitsTable.hh"
+#include "G4VVisManager.hh"
+#include "G4Circle.hh"
+#include "G4Colour.hh"
+#include "G4VisAttributes.hh"
+
+#include <iomanip>
 #include "tls.hh"
 
-/// Si hit class
-/// It defines data members to store the trackID, energy deposit, and position of charged particles in a selected volume:
-/// - tarck_id, e_dep, pos
 
+//
 class SiHit : public G4VHit
 {
 public:
   SiHit() = default;
+  SiHit(G4int rid, G4int sid);
   SiHit(const SiHit&) = default;
   ~SiHit() override = default;
 
@@ -22,27 +28,28 @@ public:
   SiHit& operator=(const SiHit&) = default;
   G4bool operator==(const SiHit&) const;
 
-  inline void* operator new(size_t);
+  inline void *operator new(size_t);
   inline void  operator delete(void*);
 
   // methods from base class
   void Draw() override;
   void Print() override;
 
-  // Set methods
-  void SetTrackID(G4int tid){ track_id = tid; };
-  void SetEdep(G4double de){ e_dep = de; };
-  void AddEdep(G4double de){ e_dep += de; };
-  void SetPos(G4ThreeVector xyz){ pos = xyz; };
+  void SetRingId(G4int rid) { ring_id = rid; };
+  void SetSectorId(G4int sid) { sector_id = sid; };
+  void SetEdep(G4double de) { e_dep = de; };
+  void AddEdep(G4double de) { e_dep += de; };
+  void SetPos(G4ThreeVector xyz) { pos = xyz; };
 
-  // Get methods
-  G4int GetTrackID() const { return track_id; };
+  G4int GetRingId() const { return ring_id; };
+  G4int GetSectorId() const { return sector_id; };
   G4double GetEdep() const { return e_dep; };
   G4ThreeVector GetPos() const { return pos; };
 
 private:
-  G4int track_id = -1;
-  G4double e_dep = 0.;
+  G4int ring_id = -1; // 0-23
+  G4int sector_id = -1; // 0-31
+  G4double e_dep;
   G4ThreeVector pos;
 };
 

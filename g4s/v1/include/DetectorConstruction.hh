@@ -6,6 +6,7 @@
 #include "S3SiArray.hh"
 #include "Chamber.hh"
 #include "Target.hh"
+#include "HPGeSD.hh"
 #include "SiSD.hh"
 
 #include "globals.hh"
@@ -44,6 +45,9 @@ public:
   void SetMaxStep(G4double );
   void SetCheckOverlaps(G4bool );
 
+public:
+  Target *GetTarget() { return target; };
+
 private:
   G4LogicalVolume *world_log;
   G4VPhysicalVolume *world_phys;
@@ -52,8 +56,14 @@ private:
   Target *target;
   IMPHPGeArray *imp_hpge_array;
   S3SiArray *s3_si_array;
+  
+  //
+  HPGeSD *hpge_sd;
+  HPGeSD *clover_sd;
+  SiSD *si_sd;
 
   G4Material* mat_air;
+  G4Material* mat_vaccum;
   G4UserLimits* step_limit;
   G4bool check_overlaps;
 
@@ -61,7 +71,6 @@ private:
   void DefineMaterials();
 
   G4VPhysicalVolume* DefineVolumes();
-
 };
 
 #endif

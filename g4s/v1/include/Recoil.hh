@@ -6,6 +6,7 @@
 #include "G4ThreeVector.hh"
 #include "G4Track.hh"
 #include "G4DynamicParticle.hh"
+#include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
 #include "G4RandomDirection.hh"
 #include "G4Decay.hh"
@@ -20,10 +21,10 @@ public:
 
 public:
   //
-  void SetRecoilA(G4int a) { recoil_a = a; };
-  void SetRecoilZ(G4int z) { recoil_z = z; };
-  void SetRecoilEx(G4int ex) { recoil_ex = ex; };
-  void SetRecoilTau(G4int tau) { recoil_tau = tau; };
+  void SetA(G4int a) { recoil_a = a; };
+  void SetZ(G4int z) { recoil_z = z; };
+  void SetEx(G4int ex) { recoil_ex = ex; };
+  void SetTau(G4int tau) { recoil_tau = tau; };
   //
   G4int GetA() { return recoil_a; };
   G4int GetZ() { return recoil_z; };

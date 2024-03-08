@@ -7,14 +7,12 @@
 #include "G4ThreeVector.hh"
 #include "tls.hh"
 
-/// HPGe hit class
-/// It defines data members to store the trackID, energy deposit, and position of charged particles in a selected volume:
-/// - tarck_id, e_dep, pos
-
+//
 class HPGeHit : public G4VHit
 {
   public:
     HPGeHit() = default;
+    HPGeHit(G4int i);
     HPGeHit(const HPGeHit&) = default;
     ~HPGeHit() override = default;
 
@@ -29,19 +27,18 @@ class HPGeHit : public G4VHit
     void Draw() override;
     void Print() override;
 
-    // Set methods
-    void SetTrackID(G4int tid){ track_id = tid; };
+    void SetID(G4int i){ detector_id = i; };
     void SetEdep(G4double de){ e_dep = de; };
     void AddEdep(G4double de){ e_dep += de; };
     void SetPos(G4ThreeVector xyz){ pos = xyz; };
 
-    // Get methods
-    G4int GetTrackID() const { return track_id; };
+    //
+    G4int GetID() const { return detector_id; };
     G4double GetEdep() const { return e_dep; };
     G4ThreeVector GetPos() const { return pos; };
 
   private:
-    G4int track_id = -1;
+    G4int detector_id = -1; 
     G4double e_dep = 0.;
     G4ThreeVector pos;
 };

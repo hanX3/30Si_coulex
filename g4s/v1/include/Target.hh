@@ -42,6 +42,10 @@ public:
   G4VPhysicalVolume *GetTargetPlacement() { return target_phys; }; 
   G4double GetTargetDensity() { return target_log->GetMaterial()->GetDensity()/g*cm3; };
   G4double GetTargetThickness(){return 2.*target_solid->GetZHalfLength()/um;};
+  G4double GetTargetNV(G4int);
+
+public:
+  void SetTargetReactionDepth(G4double d);
 
 private:
   G4double target_radius;

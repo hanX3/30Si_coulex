@@ -6,7 +6,9 @@
 #include "SiHit.hh"
 #include "RootIO.hh"
 #include "globals.hh"
-#include "PrimaryGeneratorAction.hh"
+#include "DetectorConstruction.hh"
+#include "RunAction.hh"
+#include "Projectile.hh"
 
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
@@ -20,22 +22,28 @@
 #include "TMath.h"
 #include "TFile.h"
 
-
-/// Event action class
+//
 class EventAction : public G4UserEventAction
 {
 public:
-  EventAction(PrimaryGeneratorAction *pg, RootIO *rio);
+  EventAction(RootIO *ri, RunAction *ra, Projectile *pro, DetectorConstruction *dc);
   ~EventAction() override;
 
-  void  BeginOfEventAction(const G4Event* ) override;
-  void  EndOfEventAction(const G4Event* ) override;
+  void BeginOfEventAction(const G4Event* ) override;
+  void EndOfEventAction(const G4Event* ) override;
+
+private:
+  G4int hc_id_si;
+  G4int hc_id_hpge;
+  G4int hc_id_clover;
 
 private:
   EventData event_data;
 
-  PrimaryGeneratorAction* primary;
-  RootIO* root_io;    
+  RootIO *root_io;
+  RunAction *run_action;
+  Projectile *projectile;
+  DetectorConstruction *detector_construction;
 };
 
 

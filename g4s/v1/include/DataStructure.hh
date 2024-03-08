@@ -6,6 +6,8 @@
 
 //
 struct EventData{
+  G4long event_id;
+  G4int detector_id;
   G4double e;
   G4double x;
   G4double y;
@@ -13,6 +15,8 @@ struct EventData{
 
   //
   EventData() : 
+    event_id(0),
+    detector_id(0),
     e(0.), 
     x(0.), y(0.), z(0.)
   {

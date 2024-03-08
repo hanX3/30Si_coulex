@@ -24,6 +24,9 @@
 #include <vector>
 
 //
+#define eps 0.00001
+
+//
 class ReactionCoulex : public G4VProcess
 {
 public:
@@ -70,7 +73,7 @@ private:
   Recoil *recoil;
   Projectile *projectile;
 
-  G4int CalcFthKsi(double, std::vector<G4double> *);
+  G4int CalcFThKsi(double, std::vector<G4double> *);
   void SetupLookupGenerator(G4double fksi);
   G4double GetTheta();
   G4double FineThetaFunction(G4double, G4double, G4double, G4double, G4double, G4double, G4double);
@@ -125,7 +128,7 @@ private:
   G4bool projectile_ex_flag; // true if the projectile is excited (and decays), false if the recoil is excited
   G4double projectile_ex, recoil_ex;
   G4double be2;
-  G4double de, dep;
+  G4double de, de_prime;
 
   // standard decy
   G4Decay *decay;

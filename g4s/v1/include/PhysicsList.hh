@@ -87,7 +87,7 @@ private:
 
   double step_size;
   bool custom_stopping;
-  bool use_neutrons = true;
+  bool use_neutrons = false;
   int reaction_type;
   char cs_path[256];
 };

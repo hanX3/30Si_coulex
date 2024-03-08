@@ -1,6 +1,7 @@
 #ifndef S3SiArray_h
 #define S3SiArray_h 1
 
+#include "Constants.hh"
 #include "S3SiPixel.hh"
 
 #include "G4Material.hh"
