@@ -16,6 +16,15 @@ Double_t PhotoPeakBG(Double_t *dim, Double_t *par);
 Double_t PhotoPeakBGExcludeRegion(Double_t *dim, Double_t *par);
 
 //
+void fit(TString file_name, Double_t x_low, Double_t x_high, Option_t *opt = "");
+void fit(TString file_name, Int_t r0, Int_t r1, Double_t x_low, Double_t x_high, Option_t *opt = "");
+//
+TH1D *GetHistTotal(TString file_name);
+TH1D *GetHistRings(TString file_name, Int_t r0, Int_t r1);
+void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &area_error, Option_t *opt = "");
+bool InitParams(TF1 *tf, TH1 *h);
+
+//
 void gamma_peak()
 {
   TF1 *tf_peak_bg = new TF1("photo_peak_bg", PhotoPeakBG, 400, 600, 10);
@@ -110,10 +119,271 @@ void gamma_peak()
   leg->Draw();
 }
 
+//
+void fit(TString file_name, Double_t x_low, Double_t x_high,  Option_t *opt = "")
+{
+  TH1D *h1 = GetHistTotal(file_name.Data());
 
+  Double_t area, area_error;
+  Fit(h1, x_low, x_high, area, area_error, opt);
 
+  printf("area: %02f\n", area);
+  printf("area_error: %02f\n", area_error);
+}
 
+//
+void fit(TString file_name, Int_t r0, Int_t r1, Double_t x_low, Double_t x_high,  Option_t *opt = "")
+{
+  TH1D *h1 = GetHistRings(file_name.Data(), r0, r1);
 
+  Double_t area, area_error;
+  Fit(h1, x_low, x_high, area, area_error, opt);
+
+  printf("area: %02f\n", area);
+  printf("area_error: %02f\n", area_error);
+}
+
+//
+void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &area_error, Option_t *opt = "")
+{
+  TF1 *tf_peak_bg = new TF1("photo_peak_bg", PhotoPeakBG, x_low, x_high, 7);
+  TF1 *tf_bg = new TF1("background", StepBG, x_low, x_high, 5);
+  InitParams(tf_peak_bg, h1);
+
+  TCanvas *cc2;
+  if(gROOT->GetListOfCanvases()->FindObject("cc2")){
+    cc2 = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("cc2");
+  }else{
+    cc2 = new TCanvas("cc2", "cc2", 0, 0, 480, 360);
+  }
+  cc2->cd();
+  h1->Draw("hist");
+
+  TVirtualFitter::SetMaxIterations(100000);
+  
+  TString options = opt;
+  bool verbose = !options.Contains("Q");
+  bool no_print = options.Contains("no-print");
+  if(no_print) {
+    options.ReplaceAll("no-print","");
+  }
+
+  if(h1->GetSumw2()->fN != h1->GetNbinsX()+2){
+    h1->Sumw2();
+  }
+
+  TFitResultPtr fit_res = h1->Fit(tf_peak_bg, Form("%sLRSME", options.Data()));
+
+  //fit_res.Get()->Print();
+  printf("chi^2/NDF = %.02f\n", tf_peak_bg->GetChisquare()/(double)tf_peak_bg->GetNDF());
+
+  if(!fit_res.Get()->IsValid()){
+    printf("fit has failed, trying refit... ");
+    //SetParameter(3,0.1);
+    //SetParameter(4,0.01);
+    //SetParameter(5,0.0);
+    h1->GetListOfFunctions()->Last()->Delete();
+    fit_res = h1->Fit(tf_peak_bg, Form("%sLRSME",options.Data())); //,Form("%sRSM",options.Data()))
+    if(fit_res.Get()->IsValid()){
+      printf("refit passed! \n");
+    }else{
+      printf(" refit also failed :( \n");
+    }
+  }
+
+  //
+  double bg_pars[5];
+  bg_pars[0] = tf_peak_bg->GetParameters()[0];
+  bg_pars[1] = tf_peak_bg->GetParameters()[1];
+  bg_pars[2] = tf_peak_bg->GetParameters()[2];
+  bg_pars[3] = tf_peak_bg->GetParameters()[5];
+  bg_pars[4] = tf_peak_bg->GetParameters()[6];
+
+  tf_bg->SetParameters(bg_pars);
+  h1->GetListOfFunctions()->Print();
+  tf_peak_bg->SetLineColor(2);
+  tf_peak_bg->Draw("same");
+  tf_bg->SetLineColor(1);
+  tf_bg->Draw("same");
+
+  area = tf_peak_bg->Integral(x_low,x_high) / h1->GetBinWidth(1);
+  double bg_area = tf_bg->Integral(x_low, x_high) / h1->GetBinWidth(1);
+  area -= bg_area;
+  area_error = 0.;
+
+  if(x_low>x_high){
+    std::swap(x_low, x_high);
+  }
+  Double_t sum = h1->Integral(h1->GetXaxis()->FindBin(x_low), h1->GetXaxis()->FindBin(x_high)); // * h1->GetBinWidth(1);
+  Double_t sum_error = TMath::Sqrt(sum);
+  sum -= bg_area;
+
+  area = sum;
+  area_error = TMath::Sqrt(sum + bg_area);
+
+  if(!verbose) {
+    printf("hist: %s\n",h1->GetName());
+    tf_peak_bg->Print();
+  }
+
+  tf_peak_bg->Copy(*h1->GetListOfFunctions()->FindObject(tf_peak_bg->GetName()));
+  h1->GetListOfFunctions()->Add(tf_bg->Clone()); //use to be a clone.
+  h1->GetListOfFunctions()->Print();
+
+  tf_peak_bg->SetParent(0); //h1;
+}
+
+//
+TH1D *GetHistTotal(TString file_name)
+{
+  TFile *fi = TFile::Open(file_name.Data());
+  if(!fi){
+    cout << "can not open root file" << endl;
+    return nullptr;
+  }
+
+  TH1D *h, *h_bg;
+  fi->cd();
+  h = (TH1D*)gFile->Get("h_event_ge_doppler_all");
+  h_bg = (TH1D*)gFile->Get("h_bg_ge_doppler_all");
+
+  TH1D *hh = (TH1D*)h->Clone("h_event_sub_ge_doppler_all");
+  hh->Add(h_bg, -1);
+
+  TCanvas *cc;
+  if(gROOT->GetListOfCanvases()->FindObject("cc")){
+    cc = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("cc");
+  }else{
+    cc = new TCanvas("cc", "cc", 0, 0, 480, 360);
+  }
+  cc->cd();
+  h->SetLineColor(1);
+  h_bg->SetLineColor(4);
+  hh->SetLineColor(2);
+  h->Draw("");
+  h_bg->Draw("same");
+  hh->Draw("same");
+  
+  return hh;
+}
+
+//
+TH1D *GetHistRings(TString file_name, Int_t r0, Int_t r1)
+{
+  TFile *fi = TFile::Open(file_name.Data());
+  if(!fi){
+    cout << "can not open root file" << endl;
+    return nullptr;
+  }
+
+  TH1D *h[24], *h_bg[24];
+  fi->cd();
+  for(int i=r0;i<=r1;i++){
+    h[i] = (TH1D*)gFile->Get(TString::Format("h_event_ge_doppler_all_si_ring%d",i).Data());
+    h_bg[i] = (TH1D*)gFile->Get(TString::Format("h_bg_ge_doppler_all_si_ring%d",i).Data());
+  }
+
+  for(int i=r0;i<r1;i++){
+    h[r1]->Add(h[i], 1.);
+    h_bg[r1]->Add(h_bg[i], 1.);
+  }
+
+  TH1D *hh = (TH1D*)h[r1]->Clone(TString::Format("h_event_sub_ge_doppler_ring%d_ring%d",r0,r1).Data());
+  hh->Add(h_bg[r1], -1);
+
+  TCanvas *cc;
+  if(gROOT->GetListOfCanvases()->FindObject("cc")){
+    cc = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("cc");
+  }else{
+    cc = new TCanvas("cc", "cc", 0, 0, 480, 360);
+  }
+  cc->cd();
+  h[r1]->SetLineColor(1);
+  h_bg[r1]->SetLineColor(4);
+  hh->SetLineColor(2);
+  h[r1]->Draw("");
+  h_bg[r1]->Draw("same");
+  hh->Draw("same");
+  
+  return hh;
+}
+
+//
+bool InitParams(TF1 *tf, TH1 *h)
+{
+  if(!h){
+    printf("No histogram is associated yet, no initial guesses made\n");
+    return false;
+  }
+
+  Double_t x_low, x_high;
+  tf->GetRange(x_low, x_high);
+
+  Int_t bin_low = h->GetXaxis()->FindBin(x_low);
+  Int_t bin_high = h->GetXaxis()->FindBin(x_high);
+
+  Double_t y_high = h->GetBinContent(bin_low);
+  Double_t y_low = h->GetBinContent(bin_high);
+  for(int x=1;x<5;x++) {
+    y_high += h->GetBinContent(bin_low-x);
+    y_low += h->GetBinContent(bin_high+x);
+  }
+  y_high /= 5.0;
+  y_low /= 5.0;
+
+  if(y_low>y_high){
+    std::swap(y_low, y_high);
+  }
+
+  double x_largest = 0.;
+  double y_largest = 0.;
+  int i = bin_low;
+  for(;i<=bin_high;i++) {
+    if(h->GetBinContent(i) > y_largest) {
+      y_largest = h->GetBinContent(i);
+      x_largest = h->GetXaxis()->GetBinCenter(i);
+    }
+  }
+
+  // - par[0]: height of peak
+  // - par[1]: cent of peak
+  // - par[2]: sigma
+  // - par[3]: R:    relative height of skewed gaus to gaus
+  // - par[4]: beta: "skewedness" of the skewed gaussin
+  // - par[5]: step: size of stepfunction step.
+  // - par[6]: base bg height.
+
+  //limits.
+  tf->SetParLimits(0, 0, y_largest*2);
+  tf->SetParLimits(1, x_low, x_high);
+  tf->SetParLimits(2, 0.1, x_high-x_low);
+  tf->SetParLimits(3, 0.0, 40);
+  tf->SetParLimits(4, 0.01, 5);
+  double step = (y_high-y_low)/y_largest*50;
+  tf->SetParLimits(5, 0., step+step);
+  printf(" y_high = %.02f \t y_low = %.02f \t step = %.02f\n", y_high, y_low, step); fflush(stdout);
+  double offset = y_low;
+  tf->SetParLimits(6, offset-0.5*offset, offset+offset);
+
+  //Make initial guesses
+  tf->SetParameter(0, y_largest);         //h->GetBinContent(bin));
+  tf->SetParameter(1, x_largest);         //GetParameter("centroid"));
+  tf->SetParameter(2, (x_largest*.01)/2.35);  //2,(x_high-x_low));     //2.0/bin_width); //
+  tf->SetParameter(3, 5.);
+  tf->SetParameter(4, 1.);
+  tf->SetParameter(5, step);
+  tf->SetParameter(6, offset);
+
+  tf->SetParError(0, 0.10 * y_largest);
+  tf->SetParError(1, 0.25);
+  tf->SetParError(2, 0.10 *((x_largest*.01)/2.35));
+  tf->SetParError(3, 5);
+  tf->SetParError(4, 0.5);
+  tf->SetParError(5, 0.10 * step);
+  tf->SetParError(6, 0.10 * offset);
+
+  return true;
+}
 
 //
 Double_t PolyBg(Double_t *dim, Double_t *par, Int_t order)
