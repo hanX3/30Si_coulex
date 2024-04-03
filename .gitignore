@@ -5,3 +5,11 @@
 *.so
 .fuse_hidden*
 png/
+JANUS/
+/ana_tmpfile_hanX/doppler/src_*
+/coulex_school
+/g4s
+build
+analysis
+addback
+sort

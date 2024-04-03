@@ -88,7 +88,7 @@ void RunAction::EndOfRunAction(const G4Run* run)
 
   dx = detector_construction->GetTarget()->GetTargetThickness(); // in cm
   ddx = dx*detector_construction->GetTarget()->GetTargetDensity(); // in g/cm^2
-  nv = detector_construction->GetTarget()->GetTargetNV(physics_list->GetReactionCoulex()->getTargetRecoilZ());   // in atoms/cm3
+  nv = detector_construction->GetTarget()->GetTargetNV(physics_list->GetReactionCoulex()->GetTargetRecoilZ());   // in atoms/cm3
   p = nv*dx*physics_list->GetReactionCoulex()->GetThickTargetCrossSection()*1E-18;
 
   G4cout << " Target material density in g/cm3 is : " << detector_construction->GetTarget()->GetTargetDensity() <<G4endl;

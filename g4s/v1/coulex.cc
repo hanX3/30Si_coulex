@@ -1,6 +1,13 @@
 #include "Constants.hh"
 #include "DetectorConstruction.hh"
-#include "ActionInitialization.hh"
+#include "Projectile.hh"
+#include "Recoil.hh"
+#include "PhysicsList.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
+#include "EventAction.hh"
+#include "TrackingAction.hh"
+#include "SteppingAction.hh"
 
 #include "G4RunManagerFactory.hh"
 #include "G4SteppingVerbose.hh"
@@ -16,41 +23,72 @@
 #include "sys/stat.h" //  mkdir
 #include "TROOT.h"
 
-using namespace example;
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//
 int main(int argc, char** argv)
 {
   gROOT->Reset();
 
-  //  creat file
+  // creat file
   G4int save_flag = 1;
   mkdir(DATAPATH, 0777);
 
-  // Detect interactive mode (if no arguments) and define UI session
+  //
   G4UIExecutive* ui = 0;
-  if ( argc == 1 ) {
+  if(argc == 1){
     ui = new G4UIExecutive(argc, argv);
   }
 
-  // Set the Random engine and the seed
+  //
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   G4long seed = time(NULL);
   CLHEP::HepRandom::setTheSeed(seed);
 
-  // Construct the default run manager
+  //
   G4RunManager* run_manager = new G4RunManager;
-
-  // Set mandatory initialization classes
-  DetectorConstruction* detector = new example::DetectorConstruction();
-
+  DetectorConstruction *detector = new DetectorConstruction();
   run_manager->SetUserInitialization(detector);
-  G4VModularPhysicsList* physics_list = new FTFP_BERT;
-  physics_list->RegisterPhysics(new G4StepLimiterPhysics());
-  run_manager->SetUserInitialization(physics_list);
-  // Set user action classes
-  run_manager->SetUserInitialization(new example::ActionInitialization(detector, save_flag));
+  
+  Projectile *projectile = new Projectile();
+  projectile->SetZ(12);
+  projectile->SetA(20);
+  projectile->SetKE(50. *MeV);
+  projectile->SetEx(1.598 *MeV);
+  projectile->SetTau(2.2 *ps);
+  projectile->SetFcX(0. *mm);
+  projectile->SetFcY(8. *mm);
+  projectile->SetFcDX(0. *mm);
+  projectile->SetFcDY(0. *mm);
+  projectile->Report();
+
+  Recoil *recoil = new Recoil();
+  recoil->SetZ(4);
+  recoil->SetA(9);
+  recoil->SetEx(0. *MeV);
+  recoil->SetTau(0. *ps);
+  recoil->Report();
+
+  PhysicsList *physcis_list = new PhysicsList(projectile, recoil, detector);
+  run_manager->SetUserInitialization(physcis_list);
+
+  PrimaryGeneratorAction *generator_action = new PrimaryGeneratorAction(detector, projectile);
+  run_manager->SetUserAction(generator_action);
+
+  RootIO *root_io = new RootIO(save_flag);
+  RunAction *run_action = new RunAction(physcis_list, root_io, detector);
+  run_manager->SetUserAction(run_action);
+
+  G4cout << "!! in main function test !!" << G4endl;
+  EventAction *event_action = new EventAction(root_io, run_action, projectile, detector);
+  run_manager->SetUserAction(event_action);
+
+  if((MASK&0b010)==0b010){
+    TrackingAction *tracking_action = new TrackingAction(detector, root_io);
+    run_manager->SetUserAction(tracking_action);
+  }
+  if((MASK&0b100)==0b100){
+    SteppingAction *stepping_action = new  SteppingAction(detector, root_io);
+    run_manager->SetUserAction(stepping_action);
+  }
 
   // Initialize visualization
   G4VisManager* vis_manager = new G4VisExecutive;
@@ -87,4 +125,3 @@ int main(int argc, char** argv)
   delete run_manager;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....

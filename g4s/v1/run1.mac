@@ -4,10 +4,10 @@
 # Initialize kernel
 /run/initialize
 #
-#/tracking/verbose 0
 #/hits/verbose 2
 
-/gun/particle ion
-/gun/ion 91 241
-/gun/energy 300 MeV
-/run/beamOn 30000
+/event/verbose 2
+/tracking/verbose 2
+#/hits/verbose 2
+
+/run/beamOn 3
