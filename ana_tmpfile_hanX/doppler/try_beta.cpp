@@ -5,9 +5,9 @@ void try_beta()
   //
   vector<TString> v_filename;
 
-  v_filename.push_back("./rootfile/rootfile_1/doppler_r804_825.root"); // 0
-  v_filename.push_back("./rootfile/rootfile_10/doppler_r804_825.root"); // 10
-  v_filename.push_back("./rootfile/rootfile_11/doppler_r804_825.root"); // 11
+  v_filename.push_back("./rootfile/rootfile_50/doppler_r804_825.root"); // 
+  v_filename.push_back("./rootfile/rootfile_51/doppler_r804_825.root"); // 
+  v_filename.push_back("./rootfile/rootfile_53/doppler_r804_825.root"); // 
 
   int n = v_filename.size();
 
@@ -18,7 +18,7 @@ void try_beta()
     fi[i] =  TFile::Open(v_filename[i].Data());
     fi[i]->cd();
     h[i] = (TH1D*)gFile->Get("h_event_ge_doppler_all");
-    h[i]->Rebin(2);
+    h[i]->Rebin(1);
   }
 
   TLegend *leg = new TLegend(0.6, 0.75, 0.95, 0.95);
@@ -29,7 +29,7 @@ void try_beta()
     h[i]->SetLineColor(i+1);
     if(i==0){
       h[i]->SetTitle("");
-      h[i]->GetXaxis()->SetRangeUser(1200, 2700);
+      h[i]->GetXaxis()->SetRangeUser(0, 1200);
       h[i]->Draw();
     }else{
       h[i]->Draw("same");

@@ -1,5 +1,5 @@
 //
-TFile *fi = TFile::Open("../sort/rootfile/run01000_sort.root");
+TFile *fi = TFile::Open("../sort/rootfile/run02000_sort.root");
 TTree *tr = (TTree*)fi->Get("tree");
 
 //

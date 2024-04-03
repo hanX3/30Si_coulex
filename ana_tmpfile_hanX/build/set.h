@@ -10,9 +10,7 @@ constexpr int SIMODNUM = SIMODNUMMAX-SIMODNUMMIN+1;
 
 constexpr double CUTGE = 200.;//keV
 
-constexpr double TIMEWINDOW = 2000.;//ns
-constexpr double TIMEJUMP = 50.;//ns
-
-
+constexpr int TIMEWINDOW = 150;//ns
+constexpr int TIMEJUMP = 600;//ns
 
 #endif

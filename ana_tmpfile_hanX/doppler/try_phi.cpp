@@ -5,23 +5,9 @@ void try_phi()
   //
   vector<TString> v_filename;
 
-  /*
-  v_filename.push_back("./rootfile/rootfile_1/doppler_r804_825.root"); // 0
-  v_filename.push_back("./rootfile/rootfile_2/doppler_r804_825.root"); // 5.625
-  v_filename.push_back("./rootfile/rootfile_3/doppler_r804_825.root"); // 11.25
-  v_filename.push_back("./rootfile/rootfile_4/doppler_r804_825.root"); // -5.625
-  v_filename.push_back("./rootfile/rootfile_5/doppler_r804_825.root"); // -11.25
-  */
-
-  /*
-  v_filename.push_back("./rootfile/rootfile_1/doppler_r804_825.root"); // 0
-  v_filename.push_back("./rootfile/rootfile_6/doppler_r804_825.root"); // 2
-  v_filename.push_back("./rootfile/rootfile_7/doppler_r804_825.root"); // 4
-  */
-
-  v_filename.push_back("./rootfile/rootfile_1/doppler_r804_825.root"); // 0
-  v_filename.push_back("./rootfile/rootfile_8/doppler_r804_825.root"); // 1
-  v_filename.push_back("./rootfile/rootfile_6/doppler_r804_825.root"); // 2
+  v_filename.push_back("./rootfile/rootfile_22/doppler_r804_825.root"); // 
+  v_filename.push_back("./rootfile/rootfile_26/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_29/doppler_r804_825.root"); //
 
 
   int n = v_filename.size();
@@ -33,7 +19,7 @@ void try_phi()
     fi[i] =  TFile::Open(v_filename[i].Data());
     fi[i]->cd();
     h[i] = (TH1D*)gFile->Get("h_event_ge_doppler_all");
-    h[i]->Rebin(2);
+    h[i]->Rebin(4);
   }
 
   TLegend *leg = new TLegend(0.6, 0.75, 0.95, 0.95);
@@ -44,7 +30,7 @@ void try_phi()
     h[i]->SetLineColor(i+1);
     if(i==0){
       h[i]->SetTitle("");
-      h[i]->GetXaxis()->SetRangeUser(1200, 2700);
+      h[i]->GetXaxis()->SetRangeUser(2100, 2400);
       h[i]->Draw();
     }else{
       h[i]->Draw("same");
@@ -57,6 +43,9 @@ void try_phi()
   l1->SetLineColor(2);
   l1->SetLineStyle(3);
   l1->Draw();
+
+  c1->Update();
+  c1->SaveAs("png/phi.png");
 }
 
 

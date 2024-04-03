@@ -24,7 +24,7 @@ void get_beta_si()
 }
 
 //
-void get_beta(_pt)
+void get_beta_pt()
 {
   ifstream fi1;
   fi1.open("input_pt.txt");

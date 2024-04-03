@@ -50,8 +50,12 @@ void build::Process()
   //GetGeCaliSpeNoCoin();
   //GetSiNoCaliSpeNoCoin();
   //GetSiFrontBackCorrelationData();
-  GetGeSiData("tr_event", 0, 150);
-  GetGeSiData("tr_bg", 600, 750);
+  //
+  double time_window = TIMEWINDOW;
+  double time_jump = TIMEJUMP;
+  //
+  GetGeSiData("tr_event", 0, time_window);
+  GetGeSiData("tr_bg", time_jump, time_window+time_jump);
   
   benchmark->Show("build");
 }

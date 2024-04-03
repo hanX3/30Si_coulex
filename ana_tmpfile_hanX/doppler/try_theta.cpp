@@ -10,6 +10,7 @@ void try_theta()
   v_filename.push_back("./rootfile/rootfile_31/doppler_r804_825.root"); //
   v_filename.push_back("./rootfile/rootfile_32/doppler_r804_825.root"); //
   v_filename.push_back("./rootfile/rootfile_33/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_35/doppler_r804_825.root"); //
 
 
   int n = v_filename.size();
@@ -58,8 +59,12 @@ void try_theta_single_clover(int clover_id)
   //
   vector<TString> v_filename;
 
-  v_filename.push_back("./rootfile/rootfile_33/doppler_r804_825.root"); //
-
+  v_filename.push_back("./rootfile/rootfile_29/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_30/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_31/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_32/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_34/doppler_r804_825.root"); //
+  v_filename.push_back("./rootfile/rootfile_35/doppler_r804_825.root"); //
 
   int n = v_filename.size();
 
@@ -84,11 +89,11 @@ void try_theta_single_clover(int clover_id)
     h[i]->Add(hb[i]);
     h[i]->Add(hc[i]);
     h[i]->Add(hd[i]);
-    h[i]->Rebin(2);
+    h[i]->Rebin(4);
 
     //
     leg[i] = new TLegend(0.6, 0.75, 0.95, 0.95);
-    cc[i] = new TCanvas(TString::Format("cc%d",i).Data(), "", 0, 0, 480, 360);
+    cc[i] = new TCanvas(TString::Format("cc%d",i).Data(), v_filename[i].Data(), 0, 0, 480, 360);
     cc[i]->cd();
     leg[i]->AddEntry(h[i]);
     leg[i]->AddEntry(ha[i]);
@@ -111,6 +116,7 @@ void try_theta_single_clover(int clover_id)
     hc[i]->Draw("same");
     hd[i]->Draw("same");
     
+    leg[i]->Draw();
     l1->Draw();
   }
 

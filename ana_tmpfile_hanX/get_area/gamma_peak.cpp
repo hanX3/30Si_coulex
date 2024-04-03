@@ -93,7 +93,7 @@ void gamma_peak()
 
   tf_bg->SetParameter(0, offset);
 
-
+  //
   TCanvas * cc1 = new TCanvas("cc1", "", 0, 0, 480, 360);
   cc1->cd();
   tf_peak_bg->SetLineColor(1);
@@ -119,7 +119,7 @@ void gamma_peak()
   leg->Draw();
 }
 
-//
+// fit total
 void fit(TString file_name, Double_t x_low, Double_t x_high,  Option_t *opt = "")
 {
   TH1D *h1 = GetHistTotal(file_name.Data());
@@ -131,19 +131,18 @@ void fit(TString file_name, Double_t x_low, Double_t x_high,  Option_t *opt = ""
   printf("area_error: %02f\n", area_error);
 }
 
-//
+// fit rings
 void fit(TString file_name, Int_t r0, Int_t r1, Double_t x_low, Double_t x_high,  Option_t *opt = "")
 {
   TH1D *h1 = GetHistRings(file_name.Data(), r0, r1);
 
+  printf("ring %d to %d\n", r0, r1);
+
   Double_t area, area_error;
   Fit(h1, x_low, x_high, area, area_error, opt);
-
-  printf("area: %02f\n", area);
-  printf("area_error: %02f\n", area_error);
 }
 
-//
+// real fit function
 void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &area_error, Option_t *opt = "")
 {
   TF1 *tf_peak_bg = new TF1("photo_peak_bg", PhotoPeakBG, x_low, x_high, 7);
@@ -175,7 +174,7 @@ void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &ar
   TFitResultPtr fit_res = h1->Fit(tf_peak_bg, Form("%sLRSME", options.Data()));
 
   //fit_res.Get()->Print();
-  printf("chi^2/NDF = %.02f\n", tf_peak_bg->GetChisquare()/(double)tf_peak_bg->GetNDF());
+  //printf("chi^2/NDF = %.02f\n", tf_peak_bg->GetChisquare()/(double)tf_peak_bg->GetNDF());
 
   if(!fit_res.Get()->IsValid()){
     printf("fit has failed, trying refit... ");
@@ -192,6 +191,9 @@ void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &ar
   }
 
   //
+  printf("fit peak %.02f keV\n", tf_peak_bg->GetParameter(1));
+
+  //
   double bg_pars[5];
   bg_pars[0] = tf_peak_bg->GetParameters()[0];
   bg_pars[1] = tf_peak_bg->GetParameters()[1];
@@ -200,7 +202,7 @@ void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &ar
   bg_pars[4] = tf_peak_bg->GetParameters()[6];
 
   tf_bg->SetParameters(bg_pars);
-  h1->GetListOfFunctions()->Print();
+  //h1->GetListOfFunctions()->Print();
   tf_peak_bg->SetLineColor(2);
   tf_peak_bg->Draw("same");
   tf_bg->SetLineColor(1);
@@ -220,15 +222,18 @@ void Fit(TH1D *h1, Double_t x_low, Double_t x_high, Double_t &area, Double_t &ar
 
   area = sum;
   area_error = TMath::Sqrt(sum + bg_area);
+  printf("area: %.02f error %.02f\n\n", area, area_error);
 
-  if(!verbose) {
+  /*
+  if(!verbose){
     printf("hist: %s\n",h1->GetName());
     tf_peak_bg->Print();
   }
+  */
 
   tf_peak_bg->Copy(*h1->GetListOfFunctions()->FindObject(tf_peak_bg->GetName()));
   h1->GetListOfFunctions()->Add(tf_bg->Clone()); //use to be a clone.
-  h1->GetListOfFunctions()->Print();
+  //h1->GetListOfFunctions()->Print();
 
   tf_peak_bg->SetParent(0); //h1;
 }
@@ -361,7 +366,7 @@ bool InitParams(TF1 *tf, TH1 *h)
   tf->SetParLimits(4, 0.01, 5);
   double step = (y_high-y_low)/y_largest*50;
   tf->SetParLimits(5, 0., step+step);
-  printf(" y_high = %.02f \t y_low = %.02f \t step = %.02f\n", y_high, y_low, step); fflush(stdout);
+  //printf(" y_high = %.02f \t y_low = %.02f \t step = %.02f\n", y_high, y_low, step); fflush(stdout);
   double offset = y_low;
   tf->SetParLimits(6, offset-0.5*offset, offset+offset);
 

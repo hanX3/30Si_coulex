@@ -10,11 +10,25 @@ TCut useful_ge_mod2 = "(mod==2&&ch==0)||(mod==2&&ch==1)||(mod==2&&ch==4)||(mod==
 TCut useful_ge_mod3 = "(mod==3&&ch==0)||(mod==3&&ch==8)||(mod==3&&ch==9)||(mod==3&&ch==10)||(mod==3&&ch==11)";
 TCut useful_ge_mod4 = "(mod==4&&ch==0)||(mod==4&&ch==1)||(mod==4&&ch==2)||(mod==4&&ch==8)||(mod==4&&ch==9)||(mod==4&&ch==10)||(mod==4&&ch==11)";
 
+TCut useful_ge_ring1 = "(mod==0&&ch==0)||(mod==0&&ch==1)||(mod==0&&ch==2)||(mod==0&&ch==3)";
+TCut useful_ge_ring2 = "(mod==0&&ch==4)||(mod==0&&ch==5)||(mod==0&&ch==6)||(mod==0&&ch==7)";
+TCut useful_ge_ring3 = "(useful_ge_mod2||useful_ge_mod3||useful_ge_mod4)";
+TCut useful_ge_ring4 = "(mod==1&&ch==0)||(mod==1&&ch==1)||(mod==1&&ch==2)||(mod==1&&ch==3)";
+TCut useful_ge_ring5 = "(mod==1&&ch==4)||(mod==1&&ch==5)||(mod==1&&ch==6)||(mod==1&&ch==7)";
+
+
 //
 std::map<double, double> m_133Ba;
 std::map<double, std::pair<double, double>> m_133Ba_x1x2;
 std::map<double, double> m_152Eu;
 std::map<double, std::pair<double, double>> m_152Eu_x1x2;
+
+
+void print_info()
+{
+  cout << "" << endl;
+
+}
 
 //
 void init()
@@ -66,8 +80,8 @@ void draw_spec()
   TH1D *h1 = new TH1D("h1", "", 8192, 0, 4096);
   TH1D *h2 = new TH1D("h2", "", 8192, 0, 4096);
 
-  tr[0]->Draw("energy>>h1", useful_ge_mod0||useful_ge_mod1||useful_ge_mod2||useful_ge_mod3||useful_ge_mod4, "goff");
-  tr[1]->Draw("energy>>h2", useful_ge_mod0||useful_ge_mod1||useful_ge_mod2||useful_ge_mod3||useful_ge_mod4, "goff");
+  tr[0]->Draw("energy>>h1", useful_ge_ring1, "goff");
+  tr[1]->Draw("energy>>h2", useful_ge_ring1, "goff");
   TCanvas *cc = new TCanvas("cc", "", 0, 0, 480, 360);
   cc->cd();
   h1->SetLineColor(4);
@@ -142,7 +156,7 @@ double *eff_fit(map<double, double> &m)
 }
 
 //
-void eff_cali_all(int tr_id)
+void eff_cali_ring(int tr_id, int ring_no)
 {
   init();
   
@@ -151,7 +165,27 @@ void eff_cali_all(int tr_id)
 
   TH1D *h = new TH1D("h", "", 8192, 0, 4096);
 
-  tr[tr_id]->Draw("energy>>h", useful_ge_mod0||useful_ge_mod1||useful_ge_mod2||useful_ge_mod3||useful_ge_mod4, "goff");
+  switch(ring_no){
+    case 1:
+      tr[tr_id]->Draw("energy>>h", useful_ge_ring1, "goff");
+      break;
+    case 2:
+      tr[tr_id]->Draw("energy>>h", useful_ge_ring2, "goff");
+      break;
+    case 3:
+      tr[tr_id]->Draw("energy>>h", useful_ge_ring3, "goff");
+      break;
+    case 4:
+      tr[tr_id]->Draw("energy>>h", useful_ge_ring4, "goff");
+      break;
+    case 5:
+      tr[tr_id]->Draw("energy>>h", useful_ge_ring5, "goff");
+      break;
+
+    default:
+      cout << "invalid ring number" << endl;
+      break;
+  }
 
   TSpectrum *sp = new TSpectrum();
   TH1D *h_back = (TH1D*)sp->Background(h);
@@ -316,11 +350,11 @@ void eff_cali_all(int tr_id)
 }
 
 //
-void eff_compare()
+void eff_compare(int ring_no)
 {
   //
-  eff_cali_all(0); 
-  eff_cali_all(1);
+  eff_cali_ring(0, ring_no); 
+  eff_cali_ring(1, ring_no);
 
   ifstream fi[2];
   fi[0].open(TString::Format("./dat/all_area.txt").Data()); 

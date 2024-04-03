@@ -1,4 +1,5 @@
 #include "build.h"
+#include "set.h"
 
 #include <iostream>
 #include <fstream>

@@ -1,3 +1,29 @@
+
+//
+void draw_mod_ch(int mod, int ch)
+{
+  TFile *fi1 = TFile::Open("../../sort/rootfile/run00805_sort.root");
+  TTree *tr1 = (TTree*)fi1->Get("tree");
+
+  TFile *fi2 = TFile::Open("../rootfile/run00805_addback.root");
+  TTree *tr2 = (TTree*)fi2->Get("tree");
+
+  TH1D *h = new TH1D(TString::Format("h_mod%02d_ch%02d",mod,ch), TString::Format("h_mod%02d_ch%02d",mod,ch), 8192, 0, 40960);
+  TH1D *hab = new TH1D(TString::Format("hab_mod%02d_ch%02d",mod,ch), TString::Format("hab_mod%02d_ch%02d",mod,ch), 8192, 0, 40960);
+
+  TCanvas *c1 = new TCanvas("c1", "", 0, 0, 1200, 400);
+
+  tr1->Draw(TString::Format("energy>>h_mod%02d_ch%02d",mod,ch).Data(), TString::Format("mod==%d && ch==%d",mod,ch).Data(), "goff");
+  tr2->Draw(TString::Format("energy>>hab_mod%02d_ch%02d",mod,ch).Data(), TString::Format("mod==%d && ch==%d",mod,ch).Data(), "goff");
+  h->SetLineColor(4);
+  hab->SetLineColor(2);
+  c1->cd();
+  c1->SetLogy();
+  h->Draw();
+  hab->Draw("same");
+}
+
+//
 void draw()
 {
   TFile *fi1 = TFile::Open("../../sort/rootfile/run00804_sort.root");

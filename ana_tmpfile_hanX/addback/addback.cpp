@@ -58,6 +58,7 @@ void addback::Process()
   benchmark->Start("addback");
 
   Long64_t n = tr_in->GetEntries();
+  // Long64_t n = 50;
 
   std::cout << n << std::endl;
   for(Long64_t i=0; i<n;i++){
@@ -127,6 +128,7 @@ void addback::Process()
   file_out->cd();
   tr->Write();
 
+  /*
   std::cout << ">>>hit info" << std::endl;
   for(int i=0;i<CLOVERNUM;i++){
     std::cout << ">>>clover " << i << std::endl;
@@ -138,6 +140,7 @@ void addback::Process()
     std::cout << "hit 4 " << hit4[i] << std::endl;
     std::cout << std::endl;
   }
+  */
 
   benchmark->Show("addback"); 
 }
@@ -254,7 +257,7 @@ void addback::Analysis()
           xd.mod = clover[i][j].mod; 
           xd.ch = clover[i][j].ch; 
           xd.ts = clover[i][j].ts; 
-        }else break;;
+        }else continue; 
       }
 
       for(int j=0;j<4;j++) xd.energy += clover[i][j].energy;
@@ -303,6 +306,7 @@ void addback::Analysis()
     std::cout << std::endl;
   }
 
+  if(data.size()<2) return;
   for(it=data.begin();it!=data.end();it++){
     std::cout << "key " << it->first << std::endl;
     std::cout << ">>> mod " << it->second.mod << std::endl;
