@@ -24,9 +24,8 @@ public:
   void GetGeCaliSpeNoCoin();
   void GetSiNormalizeSpeNoCoin();
   void GetSiFrontBackCorrelationData();
-  void GetGeSiEvent();
-  void GetGeSiBackground();
-  void GetGeSiData(TString tr_name, double abs_time1, double abs_time2);
+  void GetGeSiDataPrompt();
+  void GetGeSiDataRandom();
   void SaveFile();
 
 private:
@@ -35,16 +34,11 @@ private:
 
 private:
   void ReadSiCaliData();
-  void ReadSiThresholdData();
-
-private:
   void PrintSiCaliData();
-  void PrintSiThresholdData();
 
 private:
   double CaliSiEnergy(int adc, int mod, int ch);
   Short_t GetSiID(int mod, int ch);
-  Double_t GetSiThreshold(int mod, int ch);
 
 private:
   TBenchmark *benchmark;  
@@ -64,6 +58,5 @@ private:
 
   TFile *file_out;
 };
-
 
 #endif

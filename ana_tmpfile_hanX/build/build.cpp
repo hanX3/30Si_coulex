@@ -2,11 +2,12 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 build::build(const std::string &filename_in, const std::string &filename_out)
 {
   benchmark = new TBenchmark;
@@ -27,22 +28,20 @@ build::build(const std::string &filename_in, const std::string &filename_out)
 
   //read Si dat
   ReadSiCaliData();
-  ReadSiThresholdData();
-  //PrintSiCaliData();
-  //PrintSiThresholdData();
+  PrintSiCaliData();
 
   rndm = new TRandom3((Long64_t)time(0));
   file_out = TFile::Open(filename_out.c_str(), "recreate");
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 build::~build()
 {
   delete file_in;
   delete file_out;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void build::Process()
 {
   benchmark->Start("build");
@@ -50,17 +49,15 @@ void build::Process()
   //GetGeCaliSpeNoCoin();
   //GetSiNoCaliSpeNoCoin();
   //GetSiFrontBackCorrelationData();
+  
   //
-  double time_window = TIMEWINDOW;
-  double time_jump = TIMEJUMP;
-  //
-  GetGeSiData("tr_event", 0, time_window);
-  GetGeSiData("tr_bg", time_jump, time_window+time_jump);
+  GetGeSiDataPrompt();
+  GetGeSiDataRandom();
   
   benchmark->Show("build");
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void build::GetGeCaliSpeNoCoin()
 {
   std::cout << "start get cali spec no coincedence" << std::endl;
@@ -80,7 +77,7 @@ void build::GetGeCaliSpeNoCoin()
 
     tr_in->GetEntry(i);
     if(!(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX)) continue;
-    if(energy<CUTGE)  continue;
+    if(energy<CUTENERGYORADC)  continue;
     h_cali_nocoin[mod-GEMODNUMMIN][ch]->Fill(energy);
   }
   
@@ -98,7 +95,7 @@ void build::GetGeCaliSpeNoCoin()
   }
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void build::GetSiNormalizeSpeNoCoin()
 {
   TH1D *h_normalize_nocoin[SIMODNUM][16];
@@ -135,7 +132,7 @@ void build::GetSiNormalizeSpeNoCoin()
   }
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void build::GetSiFrontBackCorrelationData()
 {
   std::cout << "start get Si front-back correlation data" << std::endl;
@@ -210,7 +207,7 @@ void build::GetSiFrontBackCorrelationData()
       id = GetSiID(mod, ch);
     }
 
-    if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX && energy>GetSiThreshold(mod,ch)){
+    if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX){
       mod1 = mod;
       ch1 = ch;
       id1 = id;
@@ -256,10 +253,6 @@ void build::GetSiFrontBackCorrelationData()
     if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX){
       energy = CaliSiEnergy(energy, mod, ch);
       id = GetSiID(mod, ch);
-    }
-    if(energy<=GetSiThreshold(mod,ch)){//if small energy
-      i++;
-      continue;
     }
 
     mod2 = mod;
@@ -375,14 +368,16 @@ void build::GetSiFrontBackCorrelationData()
   tr_Si->Write();
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
+//
+void build::GetGeSiDataPrompt()
 {
-  std::cout << "start get ge si data" << std::endl;
+  std::cout << "start get ge si prompt events" << std::endl;
 
   int nMaxSiRing = 24;
   int nMaxSiSector = 32;
   int nMaxGe = 36;
+
+  double t_win = TIMEWINDOW;
 
   Int_t n_Si_ring = 0;
   Short_t Si_ring_mod[nMaxSiRing];
@@ -406,8 +401,8 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
 
   std::stringstream ss;
   ss.str("");
-  ss << "timewindow_" << TIMEWINDOW;
-  TTree *tr = new TTree(tr_name.Data(), ss.str().c_str());
+  ss << "coincidence window [-" << t_win << ", " << t_win << "] ns";
+  TTree *tr = new TTree("tr_event", ss.str().c_str());
 
   memset(Si_ring_mod, 0, sizeof(Si_ring_mod));
   memset(Si_ring_ch, 0, sizeof(Si_ring_ch));
@@ -459,7 +454,7 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
   while(true){//get first Ge data
     tr_in->GetEntry(i_start);
     i_start++;
-    if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy>CUTGE){
+    if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy>CUTENERGYORADC){
       break;
     }
   }
@@ -489,12 +484,8 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
         energy = CaliSiEnergy(energy, mod, ch);
         id = GetSiID(mod, ch);
       }
-      if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy<=CUTGE){//if Ge data and small energy
-        i_current--;
-        continue;
-      }
-      if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX && energy<=GetSiThreshold(mod,ch)){//if Si data and small energy
-        i_current--;
+
+      if(energy<=CUTENERGYORADC){//if cut small energy both for ge ans si
         continue;
       }
 
@@ -506,7 +497,7 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
         id2 = id;
       }
     
-      if((abs(ts2-ts1))>abs_time1 && abs(ts2-ts1)<abs_time2){//this coincidence
+      if((abs(ts2-ts1))<=t_win){//this coincidence
         if((mod2*100+ch2)>=0 && (mod2*100+ch2)<=415){
           Ge_mod[n_Ge] = mod2; 
           Ge_ch[n_Ge] = ch2; 
@@ -529,7 +520,7 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
           n_Si_sector++;
         }
       }else{
-        //std::cout << abs(ts2-ts1) << " ring " << n_Si_ring << " sector " << n_Si_sector << std::endl;
+        // std::cout << abs(ts2-ts1) << " ring " << n_Si_ring << " sector " << n_Si_sector << std::endl;
         break;
       }
     }//while search backward
@@ -541,11 +532,8 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
         energy = CaliSiEnergy(energy, mod, ch);
         id = GetSiID(mod, ch);
       }
-      if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy<=CUTGE){//if Ge data and small energy
-        i++;
-        continue;
-      }
-      if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX && energy<=GetSiThreshold(mod,ch)){//if Si data and small energy
+
+      if(energy<=CUTENERGYORADC){//if cut small energy both for ge ans si
         i++;
         continue;
       }
@@ -558,7 +546,7 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
         id2 = id;
       }
     
-      if(abs(ts2-ts1)>abs_time1 && abs(ts2-ts1)<abs_time2){//this coincidence
+      if((abs(ts2-ts1))<=t_win){//this coincidence
         i++;
         if((mod2*100+ch2)>=0 && (mod2*100+ch2)<=415){
           Ge_mod[n_Ge] = mod2; 
@@ -588,10 +576,12 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
     }
 
     // std::cout << "n_Ge " << n_Ge << " n_Si_ring " << n_Si_ring << " n_Si_sector " << n_Si_sector << std::endl;
-    if(n_Ge*n_Si_ring*n_Si_sector > 0){
+    // if(n_Ge*n_Si_ring*n_Si_sector > 0){
+    if(n_Ge>0 && n_Si_ring==1 && n_Si_sector==1){
       n_evt++;
 
       //
+      /*
       if(n_Si_ring==2 && n_Si_sector==1 && TMath::Abs(Si_ring_id[0]-Si_ring_id[1])==1){
         if(Si_ring_adc[0]>Si_ring_adc[1]){
           Si_ring_adc[0] += Si_ring_adc[1];
@@ -616,6 +606,7 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
         }
         n_Si_sector--;
       }
+      */
 
       file_out->cd();
       tr->Fill();
@@ -648,7 +639,7 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
       if(i>=tr_in->GetEntries()) break;
       tr_in->GetEntry(i);
       i++;
-      if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy>CUTGE){
+      if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy>CUTENERGYORADC){
         break;
       }
     }
@@ -662,13 +653,321 @@ void build::GetGeSiData(TString tr_name, double abs_time1, double abs_time2)
   tr->Write();
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
+void build::GetGeSiDataRandom()
+{
+  std::cout << "start get ge si random events" << std::endl;
+
+  int nMaxSiRing = 24;
+  int nMaxSiSector = 32;
+  int nMaxGe = 36;
+
+  double t_prompt = (TIMEWINDOW>TIMEJUMP) ? TIMEJUMP : TIMEWINDOW;
+  double t_min_rand = TIMEJUMP;
+  double t_max_rand = TIMEJUMP+TIMEWINDOW;
+
+  Int_t n_Si_ring = 0;
+  Short_t Si_ring_mod[nMaxSiRing];
+  Short_t Si_ring_ch[nMaxSiRing];
+  Short_t Si_ring_id[nMaxSiRing]; // 0-23
+  Double_t Si_ring_adc[nMaxSiRing];
+  Long64_t Si_ring_ts[nMaxSiRing];
+  Int_t n_Si_sector = 0;
+  Short_t Si_sector_mod[nMaxSiSector];
+  Short_t Si_sector_ch[nMaxSiSector];
+  Short_t Si_sector_id[nMaxSiSector]; // 0-31
+  Double_t Si_sector_adc[nMaxSiSector];
+  Long64_t Si_sector_ts[nMaxSiSector];
+  Int_t n_Ge = 0;
+  Short_t Ge_mod[nMaxGe];
+  Short_t Ge_ch[nMaxGe];
+  Double_t Ge_energy[nMaxGe];
+  Long64_t Ge_ts[nMaxGe];
+
+  Short_t id = 0;
+
+  std::stringstream ss;
+  ss.str("");
+  ss << "random coincidence window [" << t_min_rand << ", " << t_max_rand << "] ns" ;
+  TTree *tr = new TTree("tr_bg", ss.str().c_str());
+
+  memset(Si_ring_mod, 0, sizeof(Si_ring_mod));
+  memset(Si_ring_ch, 0, sizeof(Si_ring_ch));
+  memset(Si_ring_id, 0, sizeof(Si_ring_id));
+  memset(Si_ring_adc, 0, sizeof(Si_ring_adc));
+  memset(Si_ring_ts, 0, sizeof(Si_ring_ts));
+  memset(Si_sector_mod, 0, sizeof(Si_sector_mod));
+  memset(Si_sector_ch, 0, sizeof(Si_sector_ch));
+  memset(Si_sector_id, 0, sizeof(Si_sector_id));
+  memset(Si_sector_adc, 0, sizeof(Si_sector_adc));
+  memset(Si_sector_ts, 0, sizeof(Si_sector_ts));
+  memset(Ge_mod, 0, sizeof(Ge_mod));
+  memset(Ge_ch, 0, sizeof(Ge_ch));
+  memset(Ge_energy, 0, sizeof(Ge_energy));
+  memset(Ge_ts, 0, sizeof(Ge_ts));
+
+  tr->Branch("n_Si_ring", &n_Si_ring, "n_Si_ring/I");
+  tr->Branch("Si_ring_mod", Si_ring_mod, "Si_ring_mod[n_Si_ring]/S");
+  tr->Branch("Si_ring_ch", Si_ring_ch, "Si_ring_ch[n_Si_ring]/S");
+  tr->Branch("Si_ring_id", Si_ring_id, "Si_ring_id[n_Si_ring]/S");
+  tr->Branch("Si_ring_adc", Si_ring_adc, "Si_ring_adc[n_Si_ring]/D");
+  tr->Branch("Si_ring_ts", Si_ring_ts, "Si_ring_ts[n_Si_ring]/L");
+  tr->Branch("n_Si_sector", &n_Si_sector, "n_Si_sector/I");
+  tr->Branch("Si_sector_mod", Si_sector_mod, "Si_sector_mod[n_Si_sector]/S");
+  tr->Branch("Si_sector_ch", Si_sector_ch, "Si_sector_ch[n_Si_sector]/S");
+  tr->Branch("Si_sector_id", Si_sector_id, "Si_sector_id[n_Si_sector]/S");
+  tr->Branch("Si_sector_adc", Si_sector_adc, "Si_sector_adc[n_Si_sector]/D");
+  tr->Branch("Si_sector_ts", Si_sector_ts, "Si_sector_ts[n_Si_sector]/L");
+  tr->Branch("n_Ge", &n_Ge, "n_Ge/I");
+  tr->Branch("Ge_mod", Ge_mod, "Ge_mod[n_Ge]/S");
+  tr->Branch("Ge_ch", Ge_ch, "Ge_ch[n_Ge]/S");
+  tr->Branch("Ge_energy", Ge_energy, "Ge_energy[n_Ge]/D");
+  tr->Branch("Ge_ts", Ge_ts, "Ge_ts[n_Ge]/L");
+
+  Long64_t i_start = 0;
+
+  id = 0;
+  
+  Short_t mod1 = 0;
+  Short_t ch1 = 0;
+  Double_t energy1 = 0;
+  Long64_t ts1 = 0;
+  Short_t mod2 = 0;
+  Short_t ch2 = 0;
+  Short_t id2 = 0;
+  Double_t energy2 = 0;
+  Long64_t ts2 = 0;
+
+  while(true){//get first Ge data
+    tr_in->GetEntry(i_start);
+    i_start++;
+    if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy>CUTENERGYORADC){
+      break;
+    }
+  }
+  
+  Long64_t n_evt = 0;
+  Long64_t i = i_start;
+  Long64_t i_current = i-1;
+  while(true){
+    if(i==tr_in->GetEntries()) break;
+
+    tr_in->GetEntry(i_current);
+    mod1 = mod;
+    ch1 = ch;
+    energy1 = energy;
+    ts1 = ts;
+
+    Ge_mod[n_Ge] = mod1; 
+    Ge_ch[n_Ge] = ch1; 
+    Ge_energy[n_Ge] = energy1; 
+    Ge_ts[n_Ge] = ts1; 
+    n_Ge++;
+
+    while(true){//search backward
+      if(i_current--<0) break;
+      tr_in->GetEntry(i_current);
+      if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX){
+        energy = CaliSiEnergy(energy, mod, ch);
+        id = GetSiID(mod, ch);
+      }
+
+      if(energy<=CUTENERGYORADC){//if cut small energy both for ge ans si
+        continue;
+      }
+
+      mod2 = mod;
+      ch2 = ch;
+      energy2 = energy;
+      ts2 = ts;
+      if((mod2*100+ch2)>=500){
+        id2 = id;
+      }
+    
+      if(abs(ts2-ts1)<=t_prompt){//for ge coincidence
+        if((mod2*100+ch2)>=0 && (mod2*100+ch2)<=415){
+          Ge_mod[n_Ge] = mod2; 
+          Ge_ch[n_Ge] = ch2; 
+          Ge_energy[n_Ge] = energy2; 
+          Ge_ts[n_Ge] = ts2; 
+          n_Ge++;
+        }else{
+          continue;
+        }
+      }
+      else if(abs(ts2-ts1)>t_prompt && abs(ts2-ts1)<t_min_rand) continue;
+      else if((abs(ts2-ts1))>=t_min_rand && abs(ts2-ts1)<=t_max_rand){//this coincidence
+        if((mod2*100+ch2)>=0 && (mod2*100+ch2)<=415){
+          continue;
+        }else if((mod2*100+ch2)>=500 && (mod2*100+ch2)<=607){
+          Si_ring_mod[n_Si_ring] = mod2;
+          Si_ring_ch[n_Si_ring] = ch2;
+          Si_ring_id[n_Si_ring] = id2;
+          Si_ring_adc[n_Si_ring] = energy2;
+          Si_ring_ts[n_Si_ring] = ts2;
+          n_Si_ring++;
+        }else{
+          Si_sector_mod[n_Si_sector] = mod2;
+          Si_sector_ch[n_Si_sector] = ch2;
+          Si_sector_id[n_Si_sector] = id2;
+          Si_sector_adc[n_Si_sector] = energy2;
+          Si_sector_ts[n_Si_sector] = ts2;
+          n_Si_sector++;
+        }
+      }else{
+        // std::cout << abs(ts2-ts1) << " ring " << n_Si_ring << " sector " << n_Si_sector << std::endl;
+        break;
+      }
+    }//while search backward
+    
+    while(true){//search forward
+      if(i>=tr_in->GetEntries()) break;
+      tr_in->GetEntry(i);
+      if(mod>=SIMODNUMMIN && mod<=SIMODNUMMAX){
+        energy = CaliSiEnergy(energy, mod, ch);
+        id = GetSiID(mod, ch);
+      }
+
+      if(energy<=CUTENERGYORADC){//if cut small energy both for ge ans si
+        i++;
+        continue;
+      }
+
+      mod2 = mod;
+      ch2 = ch;
+      energy2 = energy;
+      ts2 = ts;
+      if((mod2*100+ch2)>=500){
+        id2 = id;
+      }
+    
+      if((abs(ts2-ts1))<=t_prompt){//for ge coincidence
+        i++;
+        if((mod2*100+ch2)>=0 && (mod2*100+ch2)<=415){
+          Ge_mod[n_Ge] = mod2; 
+          Ge_ch[n_Ge] = ch2; 
+          Ge_energy[n_Ge] = energy2; 
+          Ge_ts[n_Ge] = ts2; 
+          n_Ge++;
+        }else{
+          continue;
+        }
+      }
+      else if(abs(ts2-ts1)>t_prompt && abs(ts2-ts1)<t_min_rand){
+        i++;
+        continue;
+      }
+      else if((abs(ts2-ts1))>=t_min_rand && abs(ts2-ts1)<=t_max_rand){//this coincidence      
+        i++;
+        if((mod2*100+ch2)>=0 && (mod2*100+ch2)<=415){
+          continue;
+        }else if((mod2*100+ch2)>=500 && (mod2*100+ch2)<=607){
+          Si_ring_mod[n_Si_ring] = mod2;
+          Si_ring_ch[n_Si_ring] = ch2;
+          Si_ring_id[n_Si_ring] = id2;
+          Si_ring_adc[n_Si_ring] = energy2;
+          Si_ring_ts[n_Si_ring] = ts2;
+          n_Si_ring++;
+        }else{
+          Si_sector_mod[n_Si_sector] = mod2;
+          Si_sector_ch[n_Si_sector] = ch2;
+          Si_sector_id[n_Si_sector] = id2;
+          Si_sector_adc[n_Si_sector] = energy2;
+          Si_sector_ts[n_Si_sector] = ts2;
+          n_Si_sector++;
+        }
+      }else{
+        //std::cout << "ring " << n_Si_ring << " sector " << n_Si_sector << std::endl;
+        break;
+      }
+    }
+
+    // std::cout << "n_Ge " << n_Ge << " n_Si_ring " << n_Si_ring << " n_Si_sector " << n_Si_sector << std::endl;
+    // if(n_Ge*n_Si_ring*n_Si_sector > 0){
+    if(n_Ge>0 && n_Si_ring==1 && n_Si_sector==1){
+      n_evt++;
+
+      //
+      /*
+      if(n_Si_ring==2 && n_Si_sector==1 && TMath::Abs(Si_ring_id[0]-Si_ring_id[1])==1){
+        if(Si_ring_adc[0]>Si_ring_adc[1]){
+          Si_ring_adc[0] += Si_ring_adc[1];
+        }else{
+          Si_ring_adc[0] += Si_ring_adc[1];
+          Si_ring_mod[0] = Si_ring_mod[1];
+          Si_ring_ch[0] = Si_ring_ch[1];
+          Si_ring_id[0] = Si_ring_id[1];
+          Si_ring_ts[0] = Si_ring_ts[1];
+        }
+        n_Si_ring--;
+      }
+      if(n_Si_ring==1 && n_Si_sector==2 && (TMath::Abs(Si_sector_id[0]-Si_sector_id[1])==1||(TMath::Abs(Si_sector_id[0]-Si_sector_id[1]))==31)){
+        if(Si_sector_adc[0]>Si_sector_adc[1]){
+          Si_sector_adc[0] += Si_sector_adc[1];
+        }else{
+          Si_sector_adc[0] += Si_sector_adc[1];
+          Si_sector_mod[0] = Si_sector_mod[1];
+          Si_sector_ch[0] = Si_sector_ch[1];
+          Si_sector_id[0] = Si_sector_id[1];
+          Si_sector_ts[0] = Si_sector_ts[1];
+        }
+        n_Si_sector--;
+      }
+      */
+
+      file_out->cd();
+      tr->Fill();
+
+      if(n_evt%1000==0){
+        std::cout << "\r" << n_evt << "  " << i << "/" << tr_in->GetEntries();
+        std::cout << std::flush;
+      }
+    }
+
+    n_Si_ring = 0;
+    memset(Si_ring_mod, 0, sizeof(Si_ring_mod));
+    memset(Si_ring_ch, 0, sizeof(Si_ring_ch));
+    memset(Si_ring_id, 0, sizeof(Si_ring_id));
+    memset(Si_ring_adc, 0, sizeof(Si_ring_adc));
+    memset(Si_ring_ts, 0, sizeof(Si_ring_ts));
+    n_Si_sector = 0;
+    memset(Si_sector_mod, 0, sizeof(Si_sector_mod));
+    memset(Si_sector_ch, 0, sizeof(Si_sector_ch));
+    memset(Si_sector_id, 0, sizeof(Si_sector_id));
+    memset(Si_sector_adc, 0, sizeof(Si_sector_adc));
+    memset(Si_sector_ts, 0, sizeof(Si_sector_ts));
+    n_Ge = 0;
+    memset(Ge_mod, 0, sizeof(Ge_mod));
+    memset(Ge_ch, 0, sizeof(Ge_ch));
+    memset(Ge_energy, 0, sizeof(Ge_energy));
+    memset(Ge_ts, 0, sizeof(Ge_ts));
+
+    while(true){//get next Ge data
+      if(i>=tr_in->GetEntries()) break;
+      tr_in->GetEntry(i);
+      i++;
+      if(mod>=GEMODNUMMIN && mod<=GEMODNUMMAX && energy>CUTENERGYORADC){
+        break;
+      }
+    }
+    i_current = i-1;
+
+  }//while
+
+  std::cout << std::endl;
+
+  file_out->cd();
+  tr->Write();
+}
+
+//
 void build::ReadSiCaliData()
 {
   std::cout << "start read Si cali data" << std::endl;
 
+  std::string str_filename = SICALIFILE;  
   std::ifstream ifs;
-  ifs.open("../for_Si_front_and_back_correlation/analysis/run00804_si_cali.txt");
+  ifs.open(str_filename);
   if(!ifs){
     std::cout << "cannot open si_cali.dat." << std::endl;
     return ;
@@ -693,7 +992,7 @@ void build::ReadSiCaliData()
   ifs.close();
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void build::PrintSiCaliData()
 {
   std::cout << "start read Si cali data" << std::endl;
@@ -704,7 +1003,7 @@ void build::PrintSiCaliData()
   }
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 double build::CaliSiEnergy(int adc, int mod, int ch)
 {
   int key = 100*mod+ch;
@@ -716,46 +1015,7 @@ double build::CaliSiEnergy(int adc, int mod, int ch)
   return adcc;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void build::ReadSiThresholdData()
-{
-  std::cout << "start read Si threshold data" << std::endl;
-
-  std::ifstream ifs;
-  ifs.open("./threshold_si.txt");
-  if(!ifs){
-    std::cout << "cannot open si_threshold dat." << std::endl;
-    return ;
-  }
-
-  int mod, ch;
-  double th;
-  int key = 0;
-
-  while(1){
-    ifs >> mod >> ch >> th;
-    if(!ifs.good()) break;
-
-    key = mod*100+ch;
-
-    map_si_threshold_data.insert(std::pair<int, double>(key, th));
-  }
-
-  ifs.close();
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void build::PrintSiThresholdData()
-{
-  std::cout << "start read Si threhold data" << std::endl;
-
-  std::map<int, double>::iterator it = map_si_threshold_data.begin();
-  for(it=map_si_threshold_data.begin();it!=map_si_threshold_data.end();it++){
-    std::cout << it->first << " => " << it->second << '\n';
-  }
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 Short_t build::GetSiID(int mod, int ch)
 {
   if((mod*100+ch)>=500 && (mod*100+ch)<=607){
@@ -772,14 +1032,7 @@ Short_t build::GetSiID(int mod, int ch)
   }
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-Double_t build::GetSiThreshold(int mod, int ch)
-{
-  int key = mod*100+ch;
-  return map_si_threshold_data[key];
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
 void build::SaveFile()
 {
   file_out->cd();
