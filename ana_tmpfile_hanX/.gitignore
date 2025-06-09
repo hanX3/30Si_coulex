@@ -5,11 +5,6 @@ par/
 fig/
 out/
 decode*
-da
-db
-dc
-dd
-de
 
 *.root
 *.txt
